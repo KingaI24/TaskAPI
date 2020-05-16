@@ -22,9 +22,24 @@ namespace TaskAPI.Controllers
 
         // GET: api/TaskItems
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<TaskItem>>> GetTasks()
+        public async Task<ActionResult<IEnumerable<TaskItem>>> GetTasks(
+            [FromQuery]DateTime? from = null,
+            [FromQuery]DateTime? to = null)
         {
-            return await _context.Tasks.ToListAsync();
+            IQueryable<TaskItem> result = _context.Tasks;
+            if (from != null)
+            {
+                result = result.Where(f => from <= f.DateDeadline);
+            }
+            if (to != null)
+            {
+                result = result.Where(f => f.DateDeadline <= to);
+            }
+
+            var resultList = await result
+                .OrderByDescending(f => f.DateDeadline)
+                .ToListAsync();
+            return resultList;
         }
 
         // GET: api/TaskItems/5
@@ -50,6 +65,15 @@ namespace TaskAPI.Controllers
             if (id != taskItem.Id)
             {
                 return BadRequest();
+            }
+
+            if (taskItem.Status.Equals(StatusList.closed))
+            {
+                taskItem.DateClosure = DateTime.Now;
+            }
+            else
+            {
+                taskItem.DateClosure = default;
             }
 
             _context.Entry(taskItem).State = EntityState.Modified;
