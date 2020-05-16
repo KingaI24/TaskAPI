@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using TaskAPI.Models;
 
 namespace TaskAPI.Migrations
 {
     [DbContext(typeof(TaskContext))]
-    partial class TaskContextModelSnapshot : ModelSnapshot
+    [Migration("20200516131205_addComments")]
+    partial class addComments
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -29,7 +31,7 @@ namespace TaskAPI.Migrations
                     b.Property<bool>("Important")
                         .HasColumnType("bit");
 
-                    b.Property<long?>("TaskId")
+                    b.Property<long?>("TaskItemId")
                         .HasColumnType("bigint");
 
                     b.Property<string>("Text")
@@ -37,7 +39,7 @@ namespace TaskAPI.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("TaskId");
+                    b.HasIndex("TaskItemId");
 
                     b.ToTable("Comments");
                 });
@@ -77,9 +79,9 @@ namespace TaskAPI.Migrations
 
             modelBuilder.Entity("TaskAPI.Models.Comment", b =>
                 {
-                    b.HasOne("TaskAPI.Models.TaskItem", "Task")
+                    b.HasOne("TaskAPI.Models.TaskItem", null)
                         .WithMany("Comments")
-                        .HasForeignKey("TaskId");
+                        .HasForeignKey("TaskItemId");
                 });
 #pragma warning restore 612, 618
         }

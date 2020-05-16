@@ -14,5 +14,6 @@ namespace TaskAPI.Models
         }
 
         public DbSet<TaskItem> Tasks { get; set; }
+        public DbSet<Comment> Comments { get; set; }
     }
 }

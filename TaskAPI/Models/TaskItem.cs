@@ -18,6 +18,7 @@ namespace TaskAPI.Models
         public ImportanceList Importance { get; set; }
         public StatusList Status { get; set; }
         public DateTime ?DateClosure { get; set; }
+        public List<Comment> Comments { get; set; }
 
     }
 }

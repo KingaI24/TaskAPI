@@ -36,10 +36,7 @@ namespace TaskAPI.Controllers
                 result = result.Where(f => f.DateDeadline <= to);
             }
 
-            var resultList = await result
-                .OrderByDescending(f => f.DateDeadline)
-                .ToListAsync();
-            return resultList;
+            return await result.Include(t => t.Comments).ToListAsync();
         }
 
         // GET: api/TaskItems/5
