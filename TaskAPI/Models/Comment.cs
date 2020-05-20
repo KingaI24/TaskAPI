@@ -13,6 +13,7 @@ namespace TaskAPI.Models
         public string Text { get; set; }
         public bool Important { get; set; }
         public TaskItem Task { get; set; }
+        public long TaskId { get; set; }
 
     }
 }

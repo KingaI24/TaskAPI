@@ -31,6 +31,7 @@ namespace TaskAPI
             services.AddDbContext<TaskContext>(opt => opt.UseSqlServer(Configuration.GetConnectionString("TaskDbConnectionString")));
             services
                 .AddControllers()
+                .AddNewtonsoftJson(options => options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore)
                 .AddJsonOptions(options =>
             {
                 options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
