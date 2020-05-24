@@ -21,6 +21,12 @@ namespace TaskAPI.Controllers
         }
 
         // GET: api/TaskItems
+        /// <summary>
+        /// Show all tasks with optional filters based on deadline date. 
+        /// </summary>
+        /// <param name="from">From date. Leave empty for no limit.</param>
+        /// <param name="to">To date. Leave empty for no limit.</param>
+        /// <returns></returns>
         [HttpGet]
         public async Task<ActionResult<IEnumerable<TaskItem>>> GetTasks(
             [FromQuery]DateTime? from = null,
@@ -40,10 +46,15 @@ namespace TaskAPI.Controllers
         }
 
         // GET: api/TaskItems/5
+        /// <summary>
+        /// Find Task based on id.
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
         [HttpGet("{id}")]
         public async Task<ActionResult<TaskItem>> GetTaskItem(long id)
         {
-            var taskItem = await _context.Tasks.FindAsync(id);
+            var taskItem = await _context.Tasks.Include(t => t.Comments).FirstOrDefaultAsync(t => t.Id == id);
 
             if (taskItem == null)
             {
@@ -54,6 +65,12 @@ namespace TaskAPI.Controllers
         }
 
         // PUT: api/TaskItems/5
+        /// <summary>
+        /// Update task. 
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="taskItem"></param>
+        /// <returns></returns>
         // To protect from overposting attacks, enable the specific properties you want to bind to, for
         // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
         [HttpPut("{id}")]
@@ -64,6 +81,26 @@ namespace TaskAPI.Controllers
                 return BadRequest();
             }
 
+            /*var entry = await _context.Tasks.FindAsync(id);
+
+            if (taskItem.Title != null) entry.Title = taskItem.Title;
+            if (taskItem.Description != null) entry.Description = taskItem.Description;
+            if (taskItem.DateAdded != null) entry.DateAdded = taskItem.DateAdded;
+            if (taskItem.DateClosure != null) entry.DateClosure = taskItem.DateClosure;
+            if (taskItem.Importance != NoContent) entry.Importance = taskItem.Importance;
+
+            if (taskItem.Status.Equals(StatusList.closed))
+            {
+                entry.Status = taskItem.Status;
+                entry.DateClosure = DateTime.Now;
+            }
+
+            if (taskItem.Status.Equals(StatusList.open) || taskItem.Status.Equals(StatusList.in_progress))
+            {
+                entry.Status = taskItem.Status;
+                entry.DateClosure = default;
+            }*/
+
             if (taskItem.Status.Equals(StatusList.closed))
             {
                 taskItem.DateClosure = DateTime.Now;
@@ -71,6 +108,7 @@ namespace TaskAPI.Controllers
             else
             {
                 taskItem.DateClosure = default;
+
             }
 
             _context.Entry(taskItem).State = EntityState.Modified;
@@ -95,6 +133,11 @@ namespace TaskAPI.Controllers
         }
 
         // POST: api/TaskItems
+        /// <summary>
+        /// Insert new task.
+        /// </summary>
+        /// <param name="taskItem"></param>
+        /// <returns></returns>
         // To protect from overposting attacks, enable the specific properties you want to bind to, for
         // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
         [HttpPost]
@@ -107,6 +150,11 @@ namespace TaskAPI.Controllers
         }
 
         // DELETE: api/TaskItems/5
+        /// <summary>
+        /// Delete task by id.
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
         [HttpDelete("{id}")]
         public async Task<ActionResult<TaskItem>> DeleteTaskItem(long id)
         {

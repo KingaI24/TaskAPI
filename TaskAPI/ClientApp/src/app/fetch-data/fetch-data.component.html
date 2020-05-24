@@ -1,0 +1,38 @@
+<h1 id="tableLabel">List of tasks</h1>
+
+<p>This component demonstrates fetching data from the server.</p>
+
+<p *ngIf="!tasks"><em>No existent tasks</em></p>
+
+<table class='table table-striped' aria-labelledby="tableLabel" *ngIf="tasks">
+    <thead>
+        <tr>
+            <th>id</th>
+            <th>Title</th>
+            <th>Description</th>
+            <th>Date added</th>
+            <th>Date deadline</th>
+            <th>Importance</th>
+            <th>Status</th>
+            <th>Date closure</th>
+            <th>No of comments</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr *ngFor="let task of tasks">
+            <td>{{ task.id }}</td>
+            <td>{{ task.title }}</td>
+            <td>{{ task.description }}</td>
+            <td>{{ task.dateAdded | date:'yyyy-MM-dd HH:mm:ss' }}</td>
+            <td>{{ task.dateDeadline | date:'yyyy-MM-dd HH:mm:ss' }}</td>
+            <td>{{ task.importance }}</td>
+            <td>{{ task.status }}</td>
+            <td>{{ task.dateClosure | date:'yyyy-MM-dd HH:mm:ss' }}</td>
+            <td>{{ task.comments.length }}</td>
+        </tr>
+    </tbody>
+</table>
+
+
+      
+
