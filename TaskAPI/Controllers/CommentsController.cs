@@ -68,7 +68,6 @@ namespace TaskAPI.Controllers
             }
 
             _context.Entry(comment).State = EntityState.Modified;
-
             try
             {
                 await _context.SaveChangesAsync();

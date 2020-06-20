@@ -5,9 +5,6 @@ using System.Threading.Tasks;
 
 namespace TaskAPI.Models
 {
-    public enum ImportanceList { low, medium, high }
-    public enum StatusList { open, in_progress, closed }
-
     public class TaskItem
     {
         public long Id { get; set; }
@@ -18,7 +15,7 @@ namespace TaskAPI.Models
         public ImportanceList Importance { get; set; }
         public StatusList Status { get; set; }
         public DateTime ?DateClosure { get; set; }
-        public List<Comment> Comments { get; set; }
+        public List<Comment> Comments { get; set; } 
 
     }
 }

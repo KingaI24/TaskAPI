@@ -1,0 +1,46 @@
+<table class='table table-striped' aria-labelledby="tableLabel">
+
+    <tr>
+        <th>Title</th>
+        <td>
+            <input #title>
+            <span *ngIf="errorMessages.Title" class="text-danger"><small>{{errorMessages.Title}}</small></span>
+        </td>
+    </tr>
+    <tr>
+        <th>Description</th>
+        <td>
+            <input #description>
+            <span *ngIf="errorMessages.Description" class="text-danger"><small>{{errorMessages.Description}}</small></span>
+        </td>
+    </tr>
+    <tr>
+        <th>Date deadline</th>
+        <td>
+            <input #dateDeadline type="date"><input #timeDeadline type="time">
+            <span *ngIf="errorMessages.DateDeadline" class="text-danger"><small>{{errorMessages.DateDeadline}}</small></span>
+        </td>
+    </tr>
+    <tr>
+        <th>Importance</th>
+        <td>
+            <select [(ngModel)]="importance">
+                <option value="low">Low</option>
+                <option value="medium">Medium</option>
+                <option value="high">High</option>
+            </select>
+        </td>
+    </tr>
+    <tr>
+        <th>Status</th>
+        <td>
+            <select [(ngModel)]="status">
+                <option value="open">Open</option>
+                <option value="in_progress">In progress</option>
+                <option value="closed">Closed</option>
+            </select>
+        </td>
+    </tr>
+</table>
+<button (click)="save(title.value,description.value, dateDeadline.value,timeDeadline.value,importance,status)">SAVE</button>
+<button (click)="goBack()">BACK</button>

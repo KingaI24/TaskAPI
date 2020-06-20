@@ -1,0 +1,72 @@
+<p *ngIf="!task"><em>Loading error..</em></p>
+<p *ngIf="(isClicked | async) === false "><em>CLICKED</em></p>
+
+<div *ngIf="task">
+    <table class='table table-striped' aria-labelledby="tableLabel">
+        <tr>
+            <th>Id</th>
+            <td>{{ task.id }}</td>
+        </tr>
+        <tr>
+            <th>Title</th>
+            <td>{{ task.title }}</td>
+        </tr>
+        <tr>
+            <th>Description</th>
+            <td>{{ task.description }}</td>
+        </tr>
+        <tr>
+            <th>Date added</th>
+            <td>{{ task.dateAdded | date:'yyyy-MM-dd HH:mm:ss' }}</td>
+        </tr>
+        <tr>
+            <th>Date deadline</th>
+            <td>{{ task.dateDeadline | date:'yyyy-MM-dd HH:mm:ss' }}</td>
+        </tr>
+        <tr>
+            <th>Importance</th>
+            <td>{{ task.importance }}</td>
+        </tr>
+        <tr>
+            <th>Status</th>
+            <td>{{ task.status }}</td>
+        </tr>
+        <tr>
+            <th>Date closure</th>
+            <td>{{ task.dateClosure | date:'yyyy-MM-dd HH:mm:ss' }}</td>
+        </tr>
+    </table>
+
+    <h2>Comments </h2>
+    <table mat-table [dataSource]="task.comments" class="mat-elevation-z8">
+
+        <!-- Text Column -->
+        <
+        <ng-container matColumnDef="text">
+            <th mat-header-cell *matHeaderCellDef style="width:30%"> Text </th>
+            <td mat-cell *matCellDef="let comment"> {{comment.text}} </td>
+        </ng-container>
+
+        <!-- Important Column -->
+        <ng-container matColumnDef="important">
+            <th mat-header-cell *matHeaderCellDef style="width:30%"> Important </th>
+            <td mat-cell *matCellDef="let comment"> {{ comment.important }} </td>
+        </ng-container>
+
+        <!-- Action Column -->
+        <ng-container matColumnDef="action">
+            <th mat-header-cell *matHeaderCellDef style="width:30%"> Action </th>
+            <td mat-cell *matCellDef="let comment">
+
+                <button mat-icon-button matTooltip="Delete" [matTooltipPosition]="'after'">
+                    <mat-icon aria-label="Example icon-button with a heart icon " (click)="deleteComment(comment.id);$event.stopPropagation()">delete</mat-icon>
+                </button>
+            </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+    </table>
+
+    <button (click)="goBack()">Back</button>
+</div>

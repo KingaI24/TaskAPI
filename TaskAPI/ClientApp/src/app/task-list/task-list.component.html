@@ -1,0 +1,64 @@
+<h1 id="tableLabel">List of tasks</h1>
+
+<a routerLink="/task-new" routerLinkActive="active"> Add Task </a>
+
+<p>This component demonstrates fetching data from the server.</p>
+
+<p *ngIf="!tasks"><em>No existent tasks</em></p>
+
+<div *ngIf="tasks">
+    <div>
+        <span>Filter by deadline </span>
+        <label>
+            from
+            <input #fromDate type="date">
+            <input #fromTime type="time">
+        </label>
+        <label>
+             to
+            <input #toDate type="date">
+            <input #toTime type="time">
+        </label>
+        <button (click)="filterDate(fromDate.value,fromTime.value,toDate.value,toTime.value)" type="button"> <i class="fa fa-filter" aria-hidden="true"> Filter </i></button>
+    </div>
+    <table class='table table-striped' aria-labelledby="tableLabel">
+        <thead>
+            <tr>
+                <th>id</th>
+                <th>Title</th>
+                <th>Description</th>
+                <th>Date added</th>
+                <th>Date deadline</th>
+                <th>Importance</th>
+                <th>Status</th>
+                <th>Date closure</th>
+                <th>No of comments</th>
+                <div *ngIf="userLogged">
+                    <th>Operations</th>
+                </div>
+            </tr>
+        </thead>
+        <tbody>
+            <tr *ngFor="let task of tasks"
+                [ngClass]="{ 'selected': task === selectedTask }"
+                (click)="onSelect(task)">
+                <td>{{ task.id }}</td>
+                <td>{{ task.title }}</td>
+                <td>{{ task.description }}</td>
+                <td>{{ task.dateAdded | date:'yyyy-MM-dd HH:mm:ss' }}</td>
+                <td>{{ task.dateDeadline | date:'yyyy-MM-dd HH:mm:ss' }}</td>
+                <td>{{ task.importance }}</td>
+                <td>{{ task.status }}</td>
+                <td>{{ task.dateClosure | date:'yyyy-MM-dd HH:mm:ss' }}</td>
+                <td>{{ task.numberOfComments }}</td>
+                <div *ngIf="userLogged">
+                    <td>
+                        <button (click)="gotoDetail(task)"><i class="fas fa-info">Details</i></button>
+                        <button (click)="deleteTask(task);$event.stopPropagation()"><i class="fa fa-trash" aria-hidden="true">Delete</i></button>
+                        <button (click)="updateTask(task);$event.stopPropagation()"><i class="fas fa-pen" aria-hidden="true">Update</i></button>
+                    </td>
+                </div>
+            </tr>
+        </tbody>
+    </table>
+</div>

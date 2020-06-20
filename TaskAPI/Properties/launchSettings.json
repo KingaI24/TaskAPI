@@ -20,7 +20,7 @@
     "TaskAPI": {
       "commandName": "Project",
       "launchBrowser": true,
-      "launchUrl": "weatherforecast",
+      "launchUrl": "task-list",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       },

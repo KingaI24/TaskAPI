@@ -1,0 +1,68 @@
+<p *ngIf="!task"><em>Loading error..</em></p>
+
+<form class="form-horizontal" role="form" [formGroup]="updateForm" *ngIf="this.updateForm" (ngSubmit)="onFormSubmit()">
+    <fieldset>
+        <legend>
+            Update:
+            <strong>Entry no. {{ task.id }} </strong>
+        </legend>
+
+        <div class="form-group">
+            <div class="input-group-prepend">
+                <label class="input-group-text" for="inputGroupSelect01">Title</label>
+                <input type="text"
+                       required name="title" placeholder="Enter title" class="form-control" formControlName="title">
+                <span *ngIf="errorMessages.title" class="text-danger"><small>{{errorMessages.title}}</small></span>
+            </div>
+
+        </div>
+
+        <div class="form-group">
+            <div class="input-group-prepend">
+                <label class="input-group-text" for="inputGroupSelect01">Description</label>
+                <input type="text"
+                       required name="description" placeholder="Enter description" class="form-control" formControlName="description">
+                <span *ngIf="errorMessages.description" class="text-danger"><small>{{errorMessages.description}}</small></span>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <div class="input-group-prepend">
+                <label class="input-group-text" for="inputGroupSelect01">Date Deadline</label>
+                <input type="datetime-local"
+                       name="dateDeadline" class="form-control" formControlName="dateDeadline">
+            </div>
+        </div>
+
+        <div class="input-group mt-3">
+            <div class="input-group-prepend">
+                <label class="input-group-text" for="inputGroupSelect01">Importance</label>
+            </div>
+            <select class="custom-select" name="importance" formControlName="importance">
+                <option *ngFor="let importance of importanceList" [ngValue]="importance.value">{{importance.name}}</option>
+            </select>
+        </div>
+
+        <div class="input-group mt-3">
+            <div class="input-group-prepend">
+                <label class="input-group-text" for="inputGroupSelect01">Status</label>
+            </div>
+            <select class="form-control" name="status" formControlName="status">
+                <option *ngFor="let status of statusList" [ngValue]="status.value">
+                    {{status.name}}
+                </option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <div class="col-sm-offset-2 col-sm-10">
+                <div class="pull-right">
+                    <button type="submit" class="btn btn-primary" style="margin: 4px;">UPDATE</button>
+                    <button class="btn btn-secondary" (click)="goBack()" style="margin: 4px;">BACK</button>
+                </div>
+            </div>
+        </div>
+    </fieldset>
+</form>
+
+<button mat-raised-button (click)="openDialog()">Add comment</button>

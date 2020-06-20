@@ -2,10 +2,12 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using AutoMapper;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using TaskAPI.Models;
+using TaskAPI.ViewModel;
 
 namespace TaskAPI.Controllers
 {
@@ -14,10 +16,12 @@ namespace TaskAPI.Controllers
     public class TaskItemsController : ControllerBase
     {
         private readonly TaskContext _context;
+        private readonly IMapper _mapper;
 
-        public TaskItemsController(TaskContext context)
+        public TaskItemsController(TaskContext context, IMapper mapper)
         {
             _context = context;
+            _mapper = mapper;
         }
 
         // GET: api/TaskItems
@@ -28,7 +32,7 @@ namespace TaskAPI.Controllers
         /// <param name="to">To date. Leave empty for no limit.</param>
         /// <returns></returns>
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<TaskItem>>> GetTasks(
+        public async Task<ActionResult<IEnumerable<TaskCommentNumberVM>>> GetTasks(
             [FromQuery]DateTime? from = null,
             [FromQuery]DateTime? to = null)
         {
@@ -42,7 +46,10 @@ namespace TaskAPI.Controllers
                 result = result.Where(f => f.DateDeadline <= to);
             }
 
-            return await result.Include(t => t.Comments).ToListAsync();
+            var tasksRepo = await result.Include(t => t.Comments).ToListAsync();
+            var returnTasks = _mapper.Map<IEnumerable<TaskCommentNumberVM>>(tasksRepo);
+
+            return Ok(returnTasks);
         }
 
         // GET: api/TaskItems/5
@@ -69,37 +76,21 @@ namespace TaskAPI.Controllers
         /// Update task. 
         /// </summary>
         /// <param name="id"></param>
-        /// <param name="taskItem"></param>
+        /// <param name="taskDto"></param>
         /// <returns></returns>
         // To protect from overposting attacks, enable the specific properties you want to bind to, for
         // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutTaskItem(long id, TaskItem taskItem)
+        public async Task<IActionResult> PutTaskItem(long id, TaskCreateVM taskDto)
         {
-            if (id != taskItem.Id)
+            if (id != taskDto.Id)
             {
                 return BadRequest();
             }
 
-            /*var entry = await _context.Tasks.FindAsync(id);
+            var taskItem = _mapper.Map<TaskItem>(taskDto);
 
-            if (taskItem.Title != null) entry.Title = taskItem.Title;
-            if (taskItem.Description != null) entry.Description = taskItem.Description;
-            if (taskItem.DateAdded != null) entry.DateAdded = taskItem.DateAdded;
-            if (taskItem.DateClosure != null) entry.DateClosure = taskItem.DateClosure;
-            if (taskItem.Importance != NoContent) entry.Importance = taskItem.Importance;
-
-            if (taskItem.Status.Equals(StatusList.closed))
-            {
-                entry.Status = taskItem.Status;
-                entry.DateClosure = DateTime.Now;
-            }
-
-            if (taskItem.Status.Equals(StatusList.open) || taskItem.Status.Equals(StatusList.in_progress))
-            {
-                entry.Status = taskItem.Status;
-                entry.DateClosure = default;
-            }*/
+            taskItem.DateAdded = DateTime.Now;
 
             if (taskItem.Status.Equals(StatusList.closed))
             {
@@ -108,7 +99,6 @@ namespace TaskAPI.Controllers
             else
             {
                 taskItem.DateClosure = default;
-
             }
 
             _context.Entry(taskItem).State = EntityState.Modified;
@@ -136,14 +126,28 @@ namespace TaskAPI.Controllers
         /// <summary>
         /// Insert new task.
         /// </summary>
-        /// <param name="taskItem"></param>
+        /// <param name="taskDto"></param>
         /// <returns></returns>
         // To protect from overposting attacks, enable the specific properties you want to bind to, for
         // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
         [HttpPost]
-        public async Task<ActionResult<TaskItem>> PostTaskItem(TaskItem taskItem)
+        public async Task<ActionResult<TaskCommentNumberVM>> PostTaskItem(TaskCreateVM taskDto)
         {
+            var taskItem = _mapper.Map<TaskItem>(taskDto);
+
+            taskItem.DateAdded = DateTime.Now;
+
+            if (taskItem.Status.Equals(StatusList.closed))
+            {
+                taskItem.DateClosure = DateTime.Now;
+            }
+            else
+            {
+                taskItem.DateClosure = default;
+            }
+
             _context.Tasks.Add(taskItem);
+
             await _context.SaveChangesAsync();
 
             return CreatedAtAction("GetTaskItem", new { id = taskItem.Id }, taskItem);
@@ -156,9 +160,9 @@ namespace TaskAPI.Controllers
         /// <param name="id"></param>
         /// <returns></returns>
         [HttpDelete("{id}")]
-        public async Task<ActionResult<TaskItem>> DeleteTaskItem(long id)
+        public async Task<ActionResult<TaskCommentNumberVM>> DeleteTaskItem(long id)
         {
-            var taskItem = await _context.Tasks.FindAsync(id);
+            var taskItem = await _context.Tasks.Include(t => t.Comments).FirstAsync(t => t.Id == id);
             if (taskItem == null)
             {
                 return NotFound();
@@ -167,7 +171,8 @@ namespace TaskAPI.Controllers
             _context.Tasks.Remove(taskItem);
             await _context.SaveChangesAsync();
 
-            return taskItem;
+            var taskToReturn = _mapper.Map<TaskCommentNumberVM>(taskItem);
+            return taskToReturn;
         }
 
         private bool TaskItemExists(long id)

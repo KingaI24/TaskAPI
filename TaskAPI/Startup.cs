@@ -1,23 +1,23 @@
+
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 using Microsoft.EntityFrameworkCore;
 using TaskAPI.Models;
 using System.Text.Json.Serialization;
 using FluentValidation.AspNetCore;
-using FluentValidation;
 using System.Reflection;
-using Microsoft.OpenApi.Models;
 using System.IO;
+using System.Text;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Models;
+using AutoMapper;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 
 namespace TaskAPI
 {
@@ -33,6 +33,23 @@ namespace TaskAPI
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            //Microsoft.AspNetCore.Authentication.JwtBearer
+            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+                .AddJwtBearer(options =>
+                {
+                    options.TokenValidationParameters = new TokenValidationParameters
+                    {
+                        ValidateIssuer = true,
+                        ValidateAudience = true,
+                        ValidateLifetime = true,
+                        ValidateIssuerSigningKey = true,
+                        ValidIssuer = Configuration.GetValue<string>("Authentication:Issuer"),
+                        ValidAudience = Configuration.GetValue<string>("Authentication:Issuer"),
+                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration.GetValue<string>("Authentication:Secret"))),
+                        ClockSkew = TimeSpan.Zero
+                    };
+                });
+
             services.AddDbContext<TaskContext>(opt => opt.UseSqlServer(Configuration.GetConnectionString("TaskDbConnectionString")));
             services
                 .AddControllers()
@@ -41,8 +58,11 @@ namespace TaskAPI
             {
                 options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
                 options.JsonSerializerOptions.IgnoreNullValues = true;
-            })
-                .AddFluentValidation(fv => fv.RegisterValidatorsFromAssembly(Assembly.GetExecutingAssembly()));
+            });
+            
+            services.AddControllers().AddFluentValidation(fv => fv.RegisterValidatorsFromAssembly(Assembly.GetExecutingAssembly()));
+
+            services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
             services.AddSwaggerGen(c =>
             {
@@ -77,6 +97,21 @@ namespace TaskAPI
                 configuration.RootPath = "wwwroot/dist";
             });
 
+            // Microsoft.AspNetCore.Identity.EntityFrameworkCore
+            services.AddIdentity<IdentityUser, IdentityRole>()
+               .AddDefaultTokenProviders()
+               .AddEntityFrameworkStores<TaskContext>();
+
+            services
+                .AddMvc(options =>
+                {
+                    //AuthorizationPolicy policy = new AuthorizationPolicyBuilder(JwtBearerDefaults.AuthenticationScheme).RequireAuthenticatedUser().Build();
+
+                    //options.Filters.Add(new Microsoft.AspNetCore.Mvc.Authorization.AuthorizeFilter(policy));
+
+                    options.EnableEndpointRouting = false;
+                });
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -87,8 +122,6 @@ namespace TaskAPI
                 app.UseDeveloperExceptionPage();
             }
 
-            app.UseSpaStaticFiles();
-
             app.UseSwagger();
 
             app.UseSwaggerUI(c =>
@@ -97,14 +130,22 @@ namespace TaskAPI
             });
 
             app.UseHttpsRedirection();
-
             app.UseRouting();
+            app.UseSpaStaticFiles();
 
+            app.UseAuthentication();
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
+            });
+
+            app.UseMvc(routes =>
+            {
+                routes.MapRoute(
+                    name: "default",
+                    template: "{controller}/{action=Index}/{id?}");
             });
 
             app.UseSpa(spa =>

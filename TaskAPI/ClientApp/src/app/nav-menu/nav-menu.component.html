@@ -16,22 +16,28 @@
                 <ul class="navbar-nav flex-grow">
 
                     <li class="nav-item"
-                        [routerLinkActive]="['link-active']"
-                        [routerLinkActiveOptions]="{ exact: true }">
+                        [routerLinkActive]="['link-active']">
                         <a class="nav-link text-dark" [routerLink]="['/']">Home</a>
                     </li>
 
-                    <li class="nav-item" [routerLinkActive]="['link-active']">
-                        <a class="nav-link text-dark" [routerLink]="['/counter']">Counter</a>
+                    <li class="nav-item"
+                        [routerLinkActive]="['link-active']"
+                        [routerLinkActiveOptions]="{ exact: true }">
+                        <a class="nav-link text-dark" [routerLink]="['/task-list']">Task list</a>
                     </li>
 
-                    <li class="nav-item" [routerLinkActive]="['link-active']">
-                        <a class="nav-link text-dark" [routerLink]="['/fetch-data']">Fetch data</a>
+                    <li class="nav-item"
+                        [routerLinkActive]="['link-active']"
+                        [routerLinkActiveOptions]="{ exact: true }">
+                        <a class="nav-link text-dark" [routerLink]="['/login']">Login</a>
                     </li>
 
-                    <li class="nav-item" [routerLinkActive]="['link-active']">
-                        <a class="nav-link text-dark" [routerLink]="['/my-route']">My route</a>
+                    <li class="nav-item"
+                        [routerLinkActive]="['link-active']"
+                        [routerLinkActiveOptions]="{ exact: true }">
+                        <a class="nav-link text-dark" [routerLink]="['/registration']">Registration</a>
                     </li>
+
                 </ul>
             </div>
         </div>
