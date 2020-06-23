@@ -1,9 +1,9 @@
-import { Component, OnInit, Input, Inject, Output } from '@angular/core';
+import { Component, OnInit, Input, Inject, Output, EventEmitter } from '@angular/core';
 import { ActivatedRoute, Params } from '@angular/router';
 import { TaskService, TaskItem, ImportanceList, StatusList } from '../service/task.service';
 import { FormBuilder, FormGroup, FormControl, Validators } from '@angular/forms';
 import { Location } from '@angular/common';
-import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { MatDialog, MatDialogRef, MAT_DIALOG_DATA, MatDialogConfig } from '@angular/material/dialog';
 import { Comment, CommentService } from '../service/comment.service';
 
 @Component({
@@ -16,6 +16,8 @@ export class TaskUpdateComponent implements OnInit {
     @Input() task: TaskItem;
 
     public updateForm: FormGroup;
+
+    private errorMessagesTask = [];
 
     public importanceList = [
         { value: 0, name: "low" },
@@ -65,25 +67,42 @@ export class TaskUpdateComponent implements OnInit {
         console.log(this.updateForm.value);
         this.service.update(this.updateForm.value)
             .subscribe(
-                err => this.errorMessages = err,
-                () => console.log('Task update complete'));
+                () => console.log('Task update complete'),
+                err => {
+                    this.errorMessages = err;
+                    console.log(err);
+                });
     }
 
-    openDialog(): void {
-        const dialogRef = this.dialog.open(AddcommentComponent, {
-            width: '250px',
-            data: { }
+    openDialog(id: number): void {
+
+        const dialogConfig = new MatDialogConfig();
+
+        dialogConfig.disableClose = true;
+        dialogConfig.autoFocus = true;
+
+        dialogConfig.data = {
+            dialogTaskId: id
+        };
+
+        const dialogRef = this.dialog.open(AddcommentComponent, dialogConfig
+        );
+
+        dialogRef.afterClosed().subscribe(result => {
         });
 
-        dialogRef.afterClosed().subscribe(
-        );
-    }
+        const dialogSubmitSubscription =
+            dialogRef.componentInstance.submitClicked.subscribe(result => {
+                dialogSubmitSubscription.unsubscribe();
+            });
    
+    }
 }
 
 interface DialogData {
-    text: string;
-    importance: string;
+    dialogTaskId: number;
+    dialogText: string;
+    dialogImportant: boolean;
 }
 
 @Component({
@@ -93,7 +112,11 @@ interface DialogData {
 
 export class AddcommentComponent implements OnInit {
 
-    @Input() task: TaskItem;
+    dialogTaskId: number;
+    dialogText: string;
+    dialogImportant: boolean;
+    @Output() submitClicked = new EventEmitter<any>();
+    private errorMessagesComment = [];
 
     constructor(
         private service: CommentService,
@@ -101,7 +124,8 @@ export class AddcommentComponent implements OnInit {
         @Inject(MAT_DIALOG_DATA) public data: DialogData) { }
 
     ngOnInit() {
-        this.task = this.task;
+        this.dialogTaskId = this.data.dialogTaskId;
+        console.log(this.dialogTaskId);
     }
 
     onNoClick(): void {
@@ -110,15 +134,15 @@ export class AddcommentComponent implements OnInit {
 
     saveComment(text, important) {
         const id = 0;
-        console.log(this.task);
-        const taskid = this.task.id;
+        const taskid = this.data.dialogTaskId;
         this.service.saveComment({
             id, text, important, taskid
         }).subscribe(
+            () => console.log("completed"),
             (err) => {
-                console.log("Err in saving comment: ", err);
-            },
-            () => console.log("completed"));
+                console.log("save not possible");
+                this.errorMessagesComment = err;
+                console.log(this.errorMessagesComment);
+            });
     }
-
 }

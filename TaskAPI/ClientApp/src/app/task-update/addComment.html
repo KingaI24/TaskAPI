@@ -3,6 +3,7 @@
     <mat-form-field appearance="fill">
         <mat-label>Text</mat-label>
         <input matInput placeholder="Add text" #text>
+        <mat-error *ngIf="errorMessagesComment.Text" class="text-danger"><small>{{errorMessagesComment.Text}}</small></mat-error>
     </mat-form-field>
     <br>
     <mat-form-field>

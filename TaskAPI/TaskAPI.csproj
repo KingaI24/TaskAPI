@@ -8,18 +8,22 @@
 		<NoWarn>$(NoWarn);1591</NoWarn>
 	</PropertyGroup>
 	<ItemGroup>
+	  <Compile Remove="ClientApp\src\app\comment\**" />
 	  <Compile Remove="ClientApp\src\app\counter\**" />
 	  <Compile Remove="ClientApp\src\app\interceptors\**" />
 	  <Compile Remove="ClientApp\src\app\NewFolder\**" />
 	  <Compile Remove="ClientApp\src\app\task-update\add-comment-html\**" />
+	  <Content Remove="ClientApp\src\app\comment\**" />
 	  <Content Remove="ClientApp\src\app\counter\**" />
 	  <Content Remove="ClientApp\src\app\interceptors\**" />
 	  <Content Remove="ClientApp\src\app\NewFolder\**" />
 	  <Content Remove="ClientApp\src\app\task-update\add-comment-html\**" />
+	  <EmbeddedResource Remove="ClientApp\src\app\comment\**" />
 	  <EmbeddedResource Remove="ClientApp\src\app\counter\**" />
 	  <EmbeddedResource Remove="ClientApp\src\app\interceptors\**" />
 	  <EmbeddedResource Remove="ClientApp\src\app\NewFolder\**" />
 	  <EmbeddedResource Remove="ClientApp\src\app\task-update\add-comment-html\**" />
+	  <None Remove="ClientApp\src\app\comment\**" />
 	  <None Remove="ClientApp\src\app\counter\**" />
 	  <None Remove="ClientApp\src\app\interceptors\**" />
 	  <None Remove="ClientApp\src\app\NewFolder\**" />

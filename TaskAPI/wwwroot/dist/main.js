@@ -113,7 +113,7 @@ __webpack_require__.r(__webpack_exports__);
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony default export */ __webpack_exports__["default"] = ("<h1 mat-dialog-title>Add comment</h1>\r\n<div mat-dialog-content>\r\n    <mat-form-field appearance=\"fill\">\r\n        <mat-label>Text</mat-label>\r\n        <input matInput placeholder=\"Add text\" #text>\r\n    </mat-form-field>\r\n    <br>\r\n    <mat-form-field>\r\n        <mat-label>Important</mat-label>\r\n        <mat-select #important>\r\n            <mat-option value=\"true\">Yes</mat-option>\r\n            <mat-option value=\"false\">No</mat-option>\r\n        </mat-select>\r\n    </mat-form-field>\r\n</div>\r\n\r\n<div mat-dialog-actions>\r\n    <button mat-button (click)=\"onNoClick()\">No Thanks</button>\r\n    <button mat-button (click)=\"saveComment(text.value, important.value)\">Save</button>\r\n</div>\r\n");
+/* harmony default export */ __webpack_exports__["default"] = ("<h1 mat-dialog-title>Add comment</h1>\r\n<div mat-dialog-content>\r\n    <mat-form-field appearance=\"fill\">\r\n        <mat-label>Text</mat-label>\r\n        <input matInput placeholder=\"Add text\" #text>\r\n        <mat-error *ngIf=\"errorMessagesComment.Text\" class=\"text-danger\"><small>{{errorMessagesComment.Text}}</small></mat-error>\r\n    </mat-form-field>\r\n    <br>\r\n    <mat-form-field>\r\n        <mat-label>Important</mat-label>\r\n        <mat-select #important>\r\n            <mat-option value=\"true\">Yes</mat-option>\r\n            <mat-option value=\"false\">No</mat-option>\r\n        </mat-select>\r\n    </mat-form-field>\r\n</div>\r\n\r\n<div mat-dialog-actions>\r\n    <button mat-button (click)=\"onNoClick()\">No Thanks</button>\r\n    <button mat-button (click)=\"saveComment(text.value, important.value)\">Save</button>\r\n</div>\r\n");
 
 /***/ }),
 
@@ -126,7 +126,7 @@ __webpack_require__.r(__webpack_exports__);
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony default export */ __webpack_exports__["default"] = ("<p *ngIf=\"!task\"><em>Loading error..</em></p>\r\n\r\n<form class=\"form-horizontal\" role=\"form\" [formGroup]=\"updateForm\" *ngIf=\"this.updateForm\" (ngSubmit)=\"onFormSubmit()\">\r\n    <fieldset>\r\n        <legend>\r\n            Update:\r\n            <strong>Entry no. {{ task.id }} </strong>\r\n        </legend>\r\n\r\n        <div class=\"form-group\">\r\n            <div class=\"input-group-prepend\">\r\n                <label class=\"input-group-text\" for=\"inputGroupSelect01\">Title</label>\r\n                <input type=\"text\"\r\n                       required name=\"title\" placeholder=\"Enter title\" class=\"form-control\" formControlName=\"title\">\r\n                <span *ngIf=\"errorMessages.title\" class=\"text-danger\"><small>{{errorMessages.title}}</small></span>\r\n            </div>\r\n\r\n        </div>\r\n\r\n        <div class=\"form-group\">\r\n            <div class=\"input-group-prepend\">\r\n                <label class=\"input-group-text\" for=\"inputGroupSelect01\">Description</label>\r\n                <input type=\"text\"\r\n                       required name=\"description\" placeholder=\"Enter description\" class=\"form-control\" formControlName=\"description\">\r\n                <span *ngIf=\"errorMessages.description\" class=\"text-danger\"><small>{{errorMessages.description}}</small></span>\r\n            </div>\r\n        </div>\r\n\r\n        <div class=\"form-group\">\r\n            <div class=\"input-group-prepend\">\r\n                <label class=\"input-group-text\" for=\"inputGroupSelect01\">Date Deadline</label>\r\n                <input type=\"datetime-local\"\r\n                       name=\"dateDeadline\" class=\"form-control\" formControlName=\"dateDeadline\">\r\n            </div>\r\n        </div>\r\n\r\n        <div class=\"input-group mt-3\">\r\n            <div class=\"input-group-prepend\">\r\n                <label class=\"input-group-text\" for=\"inputGroupSelect01\">Importance</label>\r\n            </div>\r\n            <select class=\"custom-select\" name=\"importance\" formControlName=\"importance\">\r\n                <option *ngFor=\"let importance of importanceList\" [ngValue]=\"importance.value\">{{importance.name}}</option>\r\n            </select>\r\n        </div>\r\n\r\n        <div class=\"input-group mt-3\">\r\n            <div class=\"input-group-prepend\">\r\n                <label class=\"input-group-text\" for=\"inputGroupSelect01\">Status</label>\r\n            </div>\r\n            <select class=\"form-control\" name=\"status\" formControlName=\"status\">\r\n                <option *ngFor=\"let status of statusList\" [ngValue]=\"status.value\">\r\n                    {{status.name}}\r\n                </option>\r\n            </select>\r\n        </div>\r\n\r\n        <div class=\"form-group\">\r\n            <div class=\"col-sm-offset-2 col-sm-10\">\r\n                <div class=\"pull-right\">\r\n                    <button type=\"submit\" class=\"btn btn-primary\" style=\"margin: 4px;\">UPDATE</button>\r\n                    <button class=\"btn btn-secondary\" (click)=\"goBack()\" style=\"margin: 4px;\">BACK</button>\r\n                </div>\r\n            </div>\r\n        </div>\r\n    </fieldset>\r\n</form>\r\n\r\n<button mat-raised-button (click)=\"openDialog()\">Add comment</button>\r\n");
+/* harmony default export */ __webpack_exports__["default"] = ("<p *ngIf=\"!task\"><em>Loading error..</em></p>\r\n\r\n<form class=\"form-horizontal\" role=\"form\" [formGroup]=\"updateForm\" *ngIf=\"this.updateForm\" (ngSubmit)=\"onFormSubmit()\">\r\n    <fieldset>\r\n        <legend>\r\n            Update:\r\n            <strong>Entry no. {{ task.id }} </strong>\r\n        </legend>\r\n\r\n        <div class=\"form-group\">\r\n            <div class=\"input-group-prepend\">\r\n                <label class=\"input-group-text\" for=\"inputGroupSelect01\">Title</label>\r\n                <input type=\"text\"\r\n                       required name=\"title\" placeholder=\"Enter title\" class=\"form-control\" formControlName=\"title\">\r\n                <span *ngIf=\"errorMessages.title\" class=\"text-danger\"><small>{{errorMessages.Title }}</small></span>\r\n            </div>\r\n\r\n        </div>\r\n\r\n        <div class=\"form-group\">\r\n            <div class=\"input-group-prepend\">\r\n                <label class=\"input-group-text\" for=\"inputGroupSelect01\">Description</label>\r\n                <input type=\"text\"\r\n                       required name=\"description\" placeholder=\"Enter description\" class=\"form-control\" formControlName=\"description\">\r\n                <span *ngIf=\"errorMessages.Description\" class=\"text-danger\"><small>{{errorMessages.Description}}</small></span>\r\n            </div>\r\n        </div>\r\n\r\n        <div class=\"form-group\">\r\n            <div class=\"input-group-prepend\">\r\n                <label class=\"input-group-text\" for=\"inputGroupSelect01\">Date Deadline</label>\r\n                <input type=\"datetime-local\"\r\n                       name=\"dateDeadline\" class=\"form-control\" formControlName=\"dateDeadline\">\r\n                <span *ngIf=\"errorMessages.DateDeadline\" class=\"text-danger\"><small>{{errorMessages.DateDeadline }}</small></span>\r\n            </div>\r\n        </div>\r\n\r\n        <div class=\"input-group mt-3\">\r\n            <div class=\"input-group-prepend\">\r\n                <label class=\"input-group-text\" for=\"inputGroupSelect01\">Importance</label>\r\n            </div>\r\n            <select class=\"custom-select\" name=\"importance\" formControlName=\"importance\">\r\n                <option *ngFor=\"let importance of importanceList\" [ngValue]=\"importance.value\">{{importance.name}}</option>\r\n            </select>\r\n        </div>\r\n\r\n        <div class=\"input-group mt-3\">\r\n            <div class=\"input-group-prepend\">\r\n                <label class=\"input-group-text\" for=\"inputGroupSelect01\">Status</label>\r\n            </div>\r\n            <select class=\"form-control\" name=\"status\" formControlName=\"status\">\r\n                <option *ngFor=\"let status of statusList\" [ngValue]=\"status.value\">\r\n                    {{status.name}}\r\n                </option>\r\n            </select>\r\n        </div>\r\n\r\n        <div class=\"form-group\">\r\n            <div class=\"col-sm-offset-2 col-sm-10\">\r\n                <div class=\"pull-right\">\r\n                    <button type=\"submit\" class=\"btn btn-primary\" style=\"margin: 4px;\">UPDATE</button>\r\n                    <button class=\"btn btn-secondary\" (click)=\"goBack()\" style=\"margin: 4px;\">BACK</button>\r\n                </div>\r\n            </div>\r\n        </div>\r\n    </fieldset>\r\n</form>\r\n\r\n<button mat-raised-button (click)=\"openDialog(task.id)\">Add comment</button>\r\n");
 
 /***/ }),
 
@@ -539,7 +539,6 @@ let HttpRequestInterceptor = class HttpRequestInterceptor {
                     return Object(rxjs__WEBPACK_IMPORTED_MODULE_2__["of"])();
                 }
             }
-            console.log(error.error.errors);
             return Object(rxjs__WEBPACK_IMPORTED_MODULE_2__["throwError"])(error.error.errors);
         }));
     }
@@ -1406,6 +1405,7 @@ class TaskUpdateComponent {
         this.route = route;
         this.location = location;
         this.dialog = dialog;
+        this.errorMessagesTask = [];
         this.importanceList = [
             { value: 0, name: "low" },
             { value: 1, name: "medium" },
@@ -1444,14 +1444,24 @@ class TaskUpdateComponent {
     onFormSubmit() {
         console.log(this.updateForm.value);
         this.service.update(this.updateForm.value)
-            .subscribe(err => this.errorMessages = err, () => console.log('Task update complete'));
-    }
-    openDialog() {
-        const dialogRef = this.dialog.open(AddcommentComponent, {
-            width: '250px',
-            data: {}
+            .subscribe(() => console.log('Task update complete'), err => {
+            this.errorMessages = err;
+            console.log(err);
         });
-        dialogRef.afterClosed().subscribe();
+    }
+    openDialog(id) {
+        const dialogConfig = new _angular_material_dialog__WEBPACK_IMPORTED_MODULE_5__["MatDialogConfig"]();
+        dialogConfig.disableClose = true;
+        dialogConfig.autoFocus = true;
+        dialogConfig.data = {
+            dialogTaskId: id
+        };
+        const dialogRef = this.dialog.open(AddcommentComponent, dialogConfig);
+        dialogRef.afterClosed().subscribe(result => {
+        });
+        const dialogSubmitSubscription = dialogRef.componentInstance.submitClicked.subscribe(result => {
+            dialogSubmitSubscription.unsubscribe();
+        });
     }
 };
 TaskUpdateComponent.ctorParameters = () => [
@@ -1482,22 +1492,26 @@ let AddcommentComponent = class AddcommentComponent {
         this.service = service;
         this.dialogRef = dialogRef;
         this.data = data;
+        this.submitClicked = new _angular_core__WEBPACK_IMPORTED_MODULE_0__["EventEmitter"]();
+        this.errorMessagesComment = [];
     }
     ngOnInit() {
-        this.task = this.task;
+        this.dialogTaskId = this.data.dialogTaskId;
+        console.log(this.dialogTaskId);
     }
     onNoClick() {
         this.dialogRef.close();
     }
     saveComment(text, important) {
         const id = 0;
-        console.log(this.task);
-        const taskid = this.task.id;
+        const taskid = this.data.dialogTaskId;
         this.service.saveComment({
             id, text, important, taskid
-        }).subscribe((err) => {
-            console.log("Err in saving comment: ", err);
-        }, () => console.log("completed"));
+        }).subscribe(() => console.log("completed"), (err) => {
+            console.log("save not possible");
+            this.errorMessagesComment = err;
+            console.log(this.errorMessagesComment);
+        });
     }
 };
 AddcommentComponent.ctorParameters = () => [
@@ -1506,9 +1520,9 @@ AddcommentComponent.ctorParameters = () => [
     { type: undefined, decorators: [{ type: _angular_core__WEBPACK_IMPORTED_MODULE_0__["Inject"], args: [_angular_material_dialog__WEBPACK_IMPORTED_MODULE_5__["MAT_DIALOG_DATA"],] }] }
 ];
 __decorate([
-    Object(_angular_core__WEBPACK_IMPORTED_MODULE_0__["Input"])(),
+    Object(_angular_core__WEBPACK_IMPORTED_MODULE_0__["Output"])(),
     __metadata("design:type", Object)
-], AddcommentComponent.prototype, "task", void 0);
+], AddcommentComponent.prototype, "submitClicked", void 0);
 AddcommentComponent = __decorate([
     Object(_angular_core__WEBPACK_IMPORTED_MODULE_0__["Component"])({
         selector: 'addComment',

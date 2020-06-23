@@ -12,7 +12,7 @@
                 <label class="input-group-text" for="inputGroupSelect01">Title</label>
                 <input type="text"
                        required name="title" placeholder="Enter title" class="form-control" formControlName="title">
-                <span *ngIf="errorMessages.title" class="text-danger"><small>{{errorMessages.title}}</small></span>
+                <span *ngIf="errorMessages.title" class="text-danger"><small>{{errorMessages.Title }}</small></span>
             </div>
 
         </div>
@@ -22,7 +22,7 @@
                 <label class="input-group-text" for="inputGroupSelect01">Description</label>
                 <input type="text"
                        required name="description" placeholder="Enter description" class="form-control" formControlName="description">
-                <span *ngIf="errorMessages.description" class="text-danger"><small>{{errorMessages.description}}</small></span>
+                <span *ngIf="errorMessages.Description" class="text-danger"><small>{{errorMessages.Description}}</small></span>
             </div>
         </div>
 
@@ -31,6 +31,7 @@
                 <label class="input-group-text" for="inputGroupSelect01">Date Deadline</label>
                 <input type="datetime-local"
                        name="dateDeadline" class="form-control" formControlName="dateDeadline">
+                <span *ngIf="errorMessages.DateDeadline" class="text-danger"><small>{{errorMessages.DateDeadline }}</small></span>
             </div>
         </div>
 
@@ -65,4 +66,4 @@
     </fieldset>
 </form>
 
-<button mat-raised-button (click)="openDialog()">Add comment</button>
+<button mat-raised-button (click)="openDialog(task.id)">Add comment</button>
