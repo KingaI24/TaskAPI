@@ -1,7 +1,7 @@
 <header>
     <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
         <div class="container">
-            <a class="navbar-brand" [routerLink]="['/']">NetCoreAngularApp2</a>
+            <a class="navbar-brand" [routerLink]="['/']">Task Management App</a>
             <button class="navbar-toggler"
                     type="button"
                     data-toggle="collapse"
@@ -26,17 +26,27 @@
                         <a class="nav-link text-dark" [routerLink]="['/task-list']">Task list</a>
                     </li>
 
-                    <li class="nav-item"
-                        [routerLinkActive]="['link-active']"
-                        [routerLinkActiveOptions]="{ exact: true }">
-                        <a class="nav-link text-dark" [routerLink]="['/login']">Login</a>
-                    </li>
+                    <div *ngIf="isLoggedIn">
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" [routerLink]="" (click)="logoutUser()"> Logout </a>
+                        </li>
+                    </div>
 
-                    <li class="nav-item"
-                        [routerLinkActive]="['link-active']"
-                        [routerLinkActiveOptions]="{ exact: true }">
-                        <a class="nav-link text-dark" [routerLink]="['/registration']">Registration</a>
-                    </li>
+                    <div *ngIf="!isLoggedIn">
+                        <li class="nav-item"
+                            [routerLinkActive]="['link-active']"
+                            [routerLinkActiveOptions]="{ exact: true }">
+                            <a class="nav-link text-dark" [routerLink]="['/login']">Login</a>
+                        </li>
+                    </div>
+
+                    <div *ngIf="!isLoggedIn">
+                        <li class="nav-item"
+                            [routerLinkActive]="['link-active']"
+                            [routerLinkActiveOptions]="{ exact: true }">
+                            <a class="nav-link text-dark" [routerLink]="['/registration']">Registration</a>
+                        </li>
+                    </div>
 
                 </ul>
             </div>

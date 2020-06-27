@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using TaskAPI.Models;
 using TaskAPI.ViewModel;
+using TaskAPI.ViewModel.Collections;
 
 namespace TaskAPI.Controllers
 {
@@ -30,11 +31,15 @@ namespace TaskAPI.Controllers
         /// </summary>
         /// <param name="from">From date. Leave empty for no limit.</param>
         /// <param name="to">To date. Leave empty for no limit.</param>
+        /// <param name="page">The page of results, starting from 0..</param>
+        /// <param name="itemsPerPage">Number of items to display.</param>
         /// <returns></returns>
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<TaskCommentNumberVM>>> GetTasks(
+        public async Task<IActionResult> GetTasks(
             [FromQuery]DateTime? from = null,
-            [FromQuery]DateTime? to = null)
+            [FromQuery]DateTime? to = null,
+            [FromQuery]int page = 0,
+            [FromQuery]int itemsPerPage = 3)
         {
             IQueryable<TaskItem> result = _context.Tasks;
             if (from != null)
@@ -46,10 +51,17 @@ namespace TaskAPI.Controllers
                 result = result.Where(f => f.DateDeadline <= to);
             }
 
-            var tasksRepo = await result.Include(t => t.Comments).ToListAsync();
-            var returnTasks = _mapper.Map<IEnumerable<TaskCommentNumberVM>>(tasksRepo);
+            var tasksRepo = await result
+                .Include(t => t.Comments)
+                .Skip(page*itemsPerPage)
+                .Take(itemsPerPage)
+                .ToListAsync();
 
-            return Ok(returnTasks);
+            var returnTasks = _mapper.Map<IEnumerable<TaskCommentNumberVM>>(tasksRepo);
+            var paginatedList = new PaginatedList<TaskCommentNumberVM>(page, await result.CountAsync(), itemsPerPage);
+            paginatedList.Items.AddRange(returnTasks); //addrange -> to add collections
+
+            return Ok(paginatedList);
         }
 
         // GET: api/TaskItems/5

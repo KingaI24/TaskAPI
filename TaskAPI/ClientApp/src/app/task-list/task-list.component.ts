@@ -6,6 +6,8 @@ import { TaskItem } from '../service/task.service';
 import { error } from 'protractor';
 import { Router } from '@angular/router';
 import { Observable, BehaviorSubject } from 'rxjs';
+import { PaginatedTaskView } from '../service/paginatedTaskView';
+import { PageEvent } from '@angular/material/paginator';
 
 @Component({
     selector: 'app-task-list',
@@ -13,28 +15,46 @@ import { Observable, BehaviorSubject } from 'rxjs';
 })
 
 export class TaskListComponent implements OnInit {
-    tasks: Array<TaskItem>;
+    tasks: PaginatedTaskView;
     selectedTask: TaskItem;
     errorMessage: string;
-    userLogged: boolean = false ;
+    userLogged: boolean = false;
+    pageEvent: PageEvent;
     isClicked: BehaviorSubject<boolean>;
 
     constructor(private service: TaskService, private router: Router) {
-        this.isClicked = new BehaviorSubject<boolean>(false);
+        //this.isClicked = new BehaviorSubject<boolean>(false);
     }
 
     ngOnInit(): void {
-        this.getTasks();
+        this.getTasks(null);
         this.userLogged = !!localStorage.getItem('token');
-        console.log(this.userLogged);
     }
 
-    getTasks() {
-        this.service.getTasks()
+    getTasks(event?: PageEvent) {
+        console.log(event);
+        this.service.getTasks(event)
             .subscribe(
                 tasks => this.tasks = tasks,
-                error => this.errorMessage = <any>error
             );
+    }
+
+    filterDate(fromDate: Date, fromTime: Time, toDate: Date, toTime: Time) {
+        var fromDateTime, toDateTime;
+        if (fromDate) {
+            fromDateTime = fromDate;
+            if (fromTime) {
+                fromDateTime = `${fromDateTime}T${fromTime}`;
+            }
+        }
+        if (toDate) {
+            toDateTime = toDate;
+            if (toTime) {
+                toDateTime = `${toDateTime}T${toTime}`;
+            }
+        }
+        this.service.filter(fromDateTime, toDateTime)
+            .subscribe(tasks => this.tasks = tasks);
     }
 
     onSelect(task: TaskItem): void {
@@ -64,24 +84,6 @@ export class TaskListComponent implements OnInit {
                 console.log("Task deleted"),
                 error => this.errorMessage = <any>error;
             });
-    }
-
-    filterDate(fromDate: Date, fromTime: Time, toDate: Date, toTime: Time) {
-        var fromDateTime, toDateTime;
-        if (fromDate) {
-            fromDateTime = fromDate;
-            if (fromTime) {
-                fromDateTime = `${fromDateTime}T${fromTime}`;
-            }
-        }
-        if (toDate) {
-            toDateTime = toDate;
-            if (toTime) {
-                toDateTime = `${toDateTime}T${toTime}`;
-            }
-        }
-        this.service.filter(fromDateTime, toDateTime)
-            .subscribe(tasks => this.tasks = tasks);
     }
 
 }

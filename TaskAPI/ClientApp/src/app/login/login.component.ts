@@ -13,7 +13,8 @@ export class LoginComponent implements OnInit {
 
     public loginModel: LoginModel = <LoginModel>{};
 
-    constructor(private securityService: SecurityService, private router: Router) {
+    constructor(private securityService: SecurityService,
+                private router: Router) {
     }
 
     ngOnInit() {
@@ -21,7 +22,10 @@ export class LoginComponent implements OnInit {
 
     loginUser() {
         this.securityService.login(this.loginModel).subscribe(token => {
-            this.router.navigate(['/fetch-data']);
+            this.router.navigate(['/task-list'])
+                .then(() => {
+                    window.location.reload();
+                })
         });
     }
 }

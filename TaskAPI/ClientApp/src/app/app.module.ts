@@ -31,12 +31,12 @@ import { MatListModule } from '@angular/material/list';
 import { MatGridListModule } from '@angular/material/grid-list';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatIconModule } from '@angular/material/icon';
-
-
+import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
+import { MatPaginatorModule } from '@angular/material/paginator';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { CommentService } from './service/comment.service';
-
+import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 
 @NgModule({
     declarations: [
@@ -71,6 +71,9 @@ import { CommentService } from './service/comment.service';
         BrowserAnimationsModule,
         MatTooltipModule,
         MatIconModule,
+        MatCardModule,
+        MatPaginatorModule,
+        NgbModule,
         RouterModule.forRoot([
             { path: '', component: HomeComponent, pathMatch: 'full' },
             { path: 'task-list', component: TaskListComponent },
@@ -86,8 +89,9 @@ import { CommentService } from './service/comment.service';
             { path: 'login', component: LoginComponent },
             { path: 'registration', component: RegistrationComponent }
         ]),
+        NgbModule,
     ],
-    exports: [CoreModule, MatDialogModule, MatFormFieldModule, MatButtonModule, MatInputModule, MatSelectModule, MatTableModule, MatSortModule, MatTooltipModule, MatIconModule],
+    exports: [CoreModule, MatDialogModule, MatFormFieldModule, MatButtonModule, MatInputModule, MatSelectModule, MatTableModule, MatSortModule, MatTooltipModule, MatIconModule, MatCardModule, MatPaginatorModule],
     providers: [TaskService, CommentService],
     bootstrap: [AppComponent]
 })

@@ -37,12 +37,15 @@ export class TaskNewComponent implements OnInit {
         this.service.save({
             id, title, description, dateAdded, dateDeadline, importance, status, dateClosure, comments
         }).subscribe(
+            () => {
+                console.log("completed");
+                this.goBack();
+                    },
             (err) => {
                 console.log("Err in saving client: ", err);
                 console.log(err);
-                //this.errorMessages.push(err);
-            },
-            () => console.log("completed")
+                this.errorMessages=err;
+            }
         );
     }
 

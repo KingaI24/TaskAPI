@@ -14,32 +14,24 @@ namespace TaskAPI.Models
             using (var context = new TaskContext(serviceProvider.GetRequiredService<DbContextOptions<TaskContext>>()))
             {
                 // Look for any tasks.
-                if (context.Tasks.Any())
+                if (context.Tasks.Count() >= 50)
                 {
                     return;   // DB table has been seeded
                 }
 
-                context.Tasks.AddRange(
+                for (int i = 1; i<=50; i++)
+                {
+                    context.Tasks.Add(
                     new TaskItem
                     {
-                        Title = "Dentist",
-                        Description = "Baker Street 13, 12:00",
+                        Title = $"Title-{i}",
+                        Description = $"Description-{i}",
                         DateAdded = DateTime.Now,
                         DateDeadline = DateTime.Now,
-                        Importance = ImportanceList.high,
+                        Importance = ImportanceList.low,
                         Status = StatusList.open
-                    },
-
-                    new TaskItem
-                    {
-                        Title = "Presentation",
-                        Description = "Conference X, 13 april 12:00",
-                        DateAdded = DateTime.Now,
-                        DateDeadline = DateTime.Now,
-                        Importance = ImportanceList.high,
-                        Status = StatusList.in_progress
-                    }
-                );
+                    });
+                }
                 context.SaveChanges();
             }
         }

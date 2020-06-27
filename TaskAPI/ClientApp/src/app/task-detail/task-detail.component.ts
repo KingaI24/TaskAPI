@@ -39,7 +39,7 @@ export class TaskDetailComponent implements OnInit {
     deleteComment(id: number) {
 
         this.commentService.deleteComment(id).subscribe(x => {
-            this.goBack();
+            window.location.reload();
         });
     }
 

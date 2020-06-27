@@ -30,6 +30,8 @@
 	  <None Remove="ClientApp\src\app\task-update\add-comment-html\**" />
 	</ItemGroup>
 	<ItemGroup>
+	  <None Remove="ClientApp\src\app\service\paginatedTaskView.ts" />
+	  <None Remove="ClientApp\src\app\service\pagination.service.ts" />
 	  <None Remove="ClientApp\src\app\task-update\add-comment-html.component.html" />
 	  <None Remove="ClientApp\src\app\task-update\file.ts" />
 	  <None Remove="ClientApp\src\app\task-update\my.service.ts" />
@@ -52,6 +54,10 @@
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="3.1.2" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="5.4.1" />
     <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="6.6.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <TypeScriptCompile Include="ClientApp\src\app\service\paginatedTaskView.ts" />
   </ItemGroup>
 
 

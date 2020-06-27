@@ -1,5 +1,214 @@
 (window["webpackJsonp"] = window["webpackJsonp"] || []).push([["main"],{
 
+/***/ "./node_modules/@angular/localize/fesm2015/init.js":
+/*!*********************************************************!*\
+  !*** ./node_modules/@angular/localize/fesm2015/init.js ***!
+  \*********************************************************/
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+/**
+ * @license Angular v9.1.9
+ * (c) 2010-2020 Google LLC. https://angular.io/
+ * License: MIT
+ */
+
+/**
+ * @license
+ * Copyright Google Inc. All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+const __globalThis = typeof globalThis !== 'undefined' && globalThis;
+const __window = typeof window !== 'undefined' && window;
+const __self = typeof self !== 'undefined' && typeof WorkerGlobalScope !== 'undefined' &&
+    self instanceof WorkerGlobalScope && self;
+const __global = typeof global !== 'undefined' && global;
+// Always use __globalThis if available; this is the spec-defined global variable across all
+// environments.
+// Then fallback to __global first; in Node tests both __global and __window may be defined.
+const _global = __globalThis || __global || __window || __self;
+
+/**
+ * @license
+ * Copyright Google Inc. All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+/**
+ * Tag a template literal string for localization.
+ *
+ * For example:
+ *
+ * ```ts
+ * $localize `some string to localize`
+ * ```
+ *
+ * **Providing meaning, description and id**
+ *
+ * You can optionally specify one or more of `meaning`, `description` and `id` for a localized
+ * string by pre-pending it with a colon delimited block of the form:
+ *
+ * ```ts
+ * $localize`:meaning|description@@id:source message text`;
+ *
+ * $localize`:meaning|:source message text`;
+ * $localize`:description:source message text`;
+ * $localize`:@@id:source message text`;
+ * ```
+ *
+ * This format is the same as that used for `i18n` markers in Angular templates. See the
+ * [Angular 18n guide](guide/i18n#template-translations).
+ *
+ * **Naming placeholders**
+ *
+ * If the template literal string contains expressions, then the expressions will be automatically
+ * associated with placeholder names for you.
+ *
+ * For example:
+ *
+ * ```ts
+ * $localize `Hi ${name}! There are ${items.length} items.`;
+ * ```
+ *
+ * will generate a message-source of `Hi {$PH}! There are {$PH_1} items`.
+ *
+ * The recommended practice is to name the placeholder associated with each expression though.
+ *
+ * Do this by providing the placeholder name wrapped in `:` characters directly after the
+ * expression. These placeholder names are stripped out of the rendered localized string.
+ *
+ * For example, to name the `items.length` expression placeholder `itemCount` you write:
+ *
+ * ```ts
+ * $localize `There are ${items.length}:itemCount: items`;
+ * ```
+ *
+ * **Escaping colon markers**
+ *
+ * If you need to use a `:` character directly at the start of a tagged string that has no
+ * metadata block, or directly after a substitution expression that has no name you must escape
+ * the `:` by preceding it with a backslash:
+ *
+ * For example:
+ *
+ * ```ts
+ * // message has a metadata block so no need to escape colon
+ * $localize `:some description::this message starts with a colon (:)`;
+ * // no metadata block so the colon must be escaped
+ * $localize `\:this message starts with a colon (:)`;
+ * ```
+ *
+ * ```ts
+ * // named substitution so no need to escape colon
+ * $localize `${label}:label:: ${}`
+ * // anonymous substitution so colon must be escaped
+ * $localize `${label}\: ${}`
+ * ```
+ *
+ * **Processing localized strings:**
+ *
+ * There are three scenarios:
+ *
+ * * **compile-time inlining**: the `$localize` tag is transformed at compile time by a
+ * transpiler, removing the tag and replacing the template literal string with a translated
+ * literal string from a collection of translations provided to the transpilation tool.
+ *
+ * * **run-time evaluation**: the `$localize` tag is a run-time function that replaces and
+ * reorders the parts (static strings and expressions) of the template literal string with strings
+ * from a collection of translations loaded at run-time.
+ *
+ * * **pass-through evaluation**: the `$localize` tag is a run-time function that simply evaluates
+ * the original template literal string without applying any translations to the parts. This
+ * version is used during development or where there is no need to translate the localized
+ * template literals.
+ * @param messageParts a collection of the static parts of the template string.
+ * @param expressions a collection of the values of each placeholder in the template string.
+ * @returns the translated string, with the `messageParts` and `expressions` interleaved together.
+ */
+const $localize = function (messageParts, ...expressions) {
+    if ($localize.translate) {
+        // Don't use array expansion here to avoid the compiler adding `__read()` helper unnecessarily.
+        const translation = $localize.translate(messageParts, expressions);
+        messageParts = translation[0];
+        expressions = translation[1];
+    }
+    let message = stripBlock(messageParts[0], messageParts.raw[0]);
+    for (let i = 1; i < messageParts.length; i++) {
+        message += expressions[i - 1] + stripBlock(messageParts[i], messageParts.raw[i]);
+    }
+    return message;
+};
+const BLOCK_MARKER = ':';
+/**
+ * Strip a delimited "block" from the start of the `messagePart`, if it is found.
+ *
+ * If a marker character (:) actually appears in the content at the start of a tagged string or
+ * after a substitution expression, where a block has not been provided the character must be
+ * escaped with a backslash, `\:`. This function checks for this by looking at the `raw`
+ * messagePart, which should still contain the backslash.
+ *
+ * @param messagePart The cooked message part to process.
+ * @param rawMessagePart The raw message part to check.
+ * @returns the message part with the placeholder name stripped, if found.
+ * @throws an error if the block is unterminated
+ */
+function stripBlock(messagePart, rawMessagePart) {
+    return rawMessagePart.charAt(0) === BLOCK_MARKER ?
+        messagePart.substring(findEndOfBlock(messagePart, rawMessagePart) + 1) :
+        messagePart;
+}
+/**
+ * Find the end of a "marked block" indicated by the first non-escaped colon.
+ *
+ * @param cooked The cooked string (where escaped chars have been processed)
+ * @param raw The raw string (where escape sequences are still in place)
+ *
+ * @returns the index of the end of block marker
+ * @throws an error if the block is unterminated
+ */
+function findEndOfBlock(cooked, raw) {
+    /***********************************************************************************************
+     * This function is repeated in `src/utils/messages.ts` and the two should be kept in sync.
+     * The reason is that this file is marked as having side-effects, and if we import `messages.ts`
+     * into it, the whole of `src/utils` will be included in this bundle and none of the functions
+     * will be tree shaken.
+     ***********************************************************************************************/
+    for (let cookedIndex = 1, rawIndex = 1; cookedIndex < cooked.length; cookedIndex++, rawIndex++) {
+        if (raw[rawIndex] === '\\') {
+            rawIndex++;
+        }
+        else if (cooked[cookedIndex] === BLOCK_MARKER) {
+            return cookedIndex;
+        }
+    }
+    throw new Error(`Unterminated $localize metadata block in "${raw}".`);
+}
+
+/**
+ * @license
+ * Copyright Google Inc. All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+
+/**
+ * @license
+ * Copyright Google Inc. All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+// Attach $localize to the global context, as a side-effect of this module.
+_global.$localize = $localize;
+//# sourceMappingURL=init.js.map
+
+
+/***/ }),
+
 /***/ "./node_modules/raw-loader/dist/cjs.js!./src/app/app.component.html":
 /*!**************************************************************************!*\
   !*** ./node_modules/raw-loader/dist/cjs.js!./src/app/app.component.html ***!
@@ -48,7 +257,7 @@ __webpack_require__.r(__webpack_exports__);
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony default export */ __webpack_exports__["default"] = ("<header>\r\n    <nav class=\"navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3\">\r\n        <div class=\"container\">\r\n            <a class=\"navbar-brand\" [routerLink]=\"['/']\">NetCoreAngularApp2</a>\r\n            <button class=\"navbar-toggler\"\r\n                    type=\"button\"\r\n                    data-toggle=\"collapse\"\r\n                    data-target=\".navbar-collapse\"\r\n                    aria-label=\"Toggle navigation\"\r\n                    [attr.aria-expanded]=\"isExpanded\"\r\n                    (click)=\"toggle()\">\r\n                <span class=\"navbar-toggler-icon\"></span>\r\n            </button>\r\n            <div class=\"navbar-collapse collapse d-sm-inline-flex flex-sm-row-reverse\"\r\n                 [ngClass]=\"{ show: isExpanded }\">\r\n                <ul class=\"navbar-nav flex-grow\">\r\n\r\n                    <li class=\"nav-item\"\r\n                        [routerLinkActive]=\"['link-active']\">\r\n                        <a class=\"nav-link text-dark\" [routerLink]=\"['/']\">Home</a>\r\n                    </li>\r\n\r\n                    <li class=\"nav-item\"\r\n                        [routerLinkActive]=\"['link-active']\"\r\n                        [routerLinkActiveOptions]=\"{ exact: true }\">\r\n                        <a class=\"nav-link text-dark\" [routerLink]=\"['/task-list']\">Task list</a>\r\n                    </li>\r\n\r\n                    <li class=\"nav-item\"\r\n                        [routerLinkActive]=\"['link-active']\"\r\n                        [routerLinkActiveOptions]=\"{ exact: true }\">\r\n                        <a class=\"nav-link text-dark\" [routerLink]=\"['/login']\">Login</a>\r\n                    </li>\r\n\r\n                    <li class=\"nav-item\"\r\n                        [routerLinkActive]=\"['link-active']\"\r\n                        [routerLinkActiveOptions]=\"{ exact: true }\">\r\n                        <a class=\"nav-link text-dark\" [routerLink]=\"['/registration']\">Registration</a>\r\n                    </li>\r\n\r\n                </ul>\r\n            </div>\r\n        </div>\r\n    </nav>\r\n</header>\r\n");
+/* harmony default export */ __webpack_exports__["default"] = ("<header>\r\n    <nav class=\"navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3\">\r\n        <div class=\"container\">\r\n            <a class=\"navbar-brand\" [routerLink]=\"['/']\">Task Management App</a>\r\n            <button class=\"navbar-toggler\"\r\n                    type=\"button\"\r\n                    data-toggle=\"collapse\"\r\n                    data-target=\".navbar-collapse\"\r\n                    aria-label=\"Toggle navigation\"\r\n                    [attr.aria-expanded]=\"isExpanded\"\r\n                    (click)=\"toggle()\">\r\n                <span class=\"navbar-toggler-icon\"></span>\r\n            </button>\r\n            <div class=\"navbar-collapse collapse d-sm-inline-flex flex-sm-row-reverse\"\r\n                 [ngClass]=\"{ show: isExpanded }\">\r\n                <ul class=\"navbar-nav flex-grow\">\r\n\r\n                    <li class=\"nav-item\"\r\n                        [routerLinkActive]=\"['link-active']\">\r\n                        <a class=\"nav-link text-dark\" [routerLink]=\"['/']\">Home</a>\r\n                    </li>\r\n\r\n                    <li class=\"nav-item\"\r\n                        [routerLinkActive]=\"['link-active']\"\r\n                        [routerLinkActiveOptions]=\"{ exact: true }\">\r\n                        <a class=\"nav-link text-dark\" [routerLink]=\"['/task-list']\">Task list</a>\r\n                    </li>\r\n\r\n                    <div *ngIf=\"isLoggedIn\">\r\n                        <li class=\"nav-item\">\r\n                            <a class=\"nav-link text-dark\" [routerLink]=\"\" (click)=\"logoutUser()\"> Logout </a>\r\n                        </li>\r\n                    </div>\r\n\r\n                    <div *ngIf=\"!isLoggedIn\">\r\n                        <li class=\"nav-item\"\r\n                            [routerLinkActive]=\"['link-active']\"\r\n                            [routerLinkActiveOptions]=\"{ exact: true }\">\r\n                            <a class=\"nav-link text-dark\" [routerLink]=\"['/login']\">Login</a>\r\n                        </li>\r\n                    </div>\r\n\r\n                    <div *ngIf=\"!isLoggedIn\">\r\n                        <li class=\"nav-item\"\r\n                            [routerLinkActive]=\"['link-active']\"\r\n                            [routerLinkActiveOptions]=\"{ exact: true }\">\r\n                            <a class=\"nav-link text-dark\" [routerLink]=\"['/registration']\">Registration</a>\r\n                        </li>\r\n                    </div>\r\n\r\n                </ul>\r\n            </div>\r\n        </div>\r\n    </nav>\r\n</header>\r\n");
 
 /***/ }),
 
@@ -87,7 +296,7 @@ __webpack_require__.r(__webpack_exports__);
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony default export */ __webpack_exports__["default"] = ("<h1 id=\"tableLabel\">List of tasks</h1>\r\n\r\n<a routerLink=\"/task-new\" routerLinkActive=\"active\"> Add Task </a>\r\n\r\n<p>This component demonstrates fetching data from the server.</p>\r\n\r\n<p *ngIf=\"!tasks\"><em>No existent tasks</em></p>\r\n\r\n<div *ngIf=\"tasks\">\r\n    <div>\r\n        <span>Filter by deadline </span>\r\n        <label>\r\n            from\r\n            <input #fromDate type=\"date\">\r\n            <input #fromTime type=\"time\">\r\n        </label>\r\n        <label>\r\n             to\r\n            <input #toDate type=\"date\">\r\n            <input #toTime type=\"time\">\r\n        </label>\r\n        <button (click)=\"filterDate(fromDate.value,fromTime.value,toDate.value,toTime.value)\" type=\"button\"> <i class=\"fa fa-filter\" aria-hidden=\"true\"> Filter </i></button>\r\n    </div>\r\n    <table class='table table-striped' aria-labelledby=\"tableLabel\">\r\n        <thead>\r\n            <tr>\r\n                <th>id</th>\r\n                <th>Title</th>\r\n                <th>Description</th>\r\n                <th>Date added</th>\r\n                <th>Date deadline</th>\r\n                <th>Importance</th>\r\n                <th>Status</th>\r\n                <th>Date closure</th>\r\n                <th>No of comments</th>\r\n                <div *ngIf=\"userLogged\">\r\n                    <th>Operations</th>\r\n                </div>\r\n            </tr>\r\n        </thead>\r\n        <tbody>\r\n            <tr *ngFor=\"let task of tasks\"\r\n                [ngClass]=\"{ 'selected': task === selectedTask }\"\r\n                (click)=\"onSelect(task)\">\r\n                <td>{{ task.id }}</td>\r\n                <td>{{ task.title }}</td>\r\n                <td>{{ task.description }}</td>\r\n                <td>{{ task.dateAdded | date:'yyyy-MM-dd HH:mm:ss' }}</td>\r\n                <td>{{ task.dateDeadline | date:'yyyy-MM-dd HH:mm:ss' }}</td>\r\n                <td>{{ task.importance }}</td>\r\n                <td>{{ task.status }}</td>\r\n                <td>{{ task.dateClosure | date:'yyyy-MM-dd HH:mm:ss' }}</td>\r\n                <td>{{ task.numberOfComments }}</td>\r\n                <div *ngIf=\"userLogged\">\r\n                    <td>\r\n                        <button (click)=\"gotoDetail(task)\"><i class=\"fas fa-info\">Details</i></button>\r\n                        <button (click)=\"deleteTask(task);$event.stopPropagation()\"><i class=\"fa fa-trash\" aria-hidden=\"true\">Delete</i></button>\r\n                        <button (click)=\"updateTask(task);$event.stopPropagation()\"><i class=\"fas fa-pen\" aria-hidden=\"true\">Update</i></button>\r\n                    </td>\r\n                </div>\r\n            </tr>\r\n        </tbody>\r\n    </table>\r\n</div>\r\n");
+/* harmony default export */ __webpack_exports__["default"] = ("\r\n    <h1 id=\"tableLabel\">List of tasks</h1>\r\n\r\n    <a routerLink=\"/task-new\" routerLinkActive=\"active\"> Add Task </a>\r\n\r\n    <p>This component demonstrates fetching data from the server.</p>\r\n\r\n    <p *ngIf=\"!tasks\"><em>No existent tasks</em></p>\r\n\r\n    <div *ngIf=\"tasks\">\r\n        <div>\r\n            <span>Filter by deadline </span>\r\n            <label>\r\n                from\r\n                <input #fromDate type=\"date\">\r\n                <input #fromTime type=\"time\">\r\n            </label>\r\n            <label>\r\n                to\r\n                <input #toDate type=\"date\">\r\n                <input #toTime type=\"time\">\r\n            </label>\r\n            <button (click)=\"filterDate(fromDate.value,fromTime.value,toDate.value,toTime.value)\" type=\"button\"> <i class=\"fa fa-filter\" aria-hidden=\"true\"> Filter </i></button>\r\n        </div>\r\n\r\n        <!--mat-paginator [length]=\"tasks?.totalItems\"\r\n                   [pageSize]=\"tasks?.itemsPerPage\"\r\n                   [pageSizeOptions]=\"[3,6]\"\r\n                   (page)=\"pageEvent = getTasks($event)\">\r\n        </mat-paginator-->\r\n\r\n        <ngb-pagination [collectionSize]=\"tasks.totalItems\"\r\n                        [(page)]=\"tasks.currentPage\"\r\n                        [pageSize]=\"tasks.itemsPerPage\"\r\n                        [maxSize]=\"3\"\r\n                        [rotate]=\"true\"\r\n                        [boundaryLinks]=\"true\"\r\n                        (pageChange)=\"getTasks($event)\">\r\n        </ngb-pagination>\r\n\r\n        <table class='table table-striped' aria-labelledby=\"tableLabel\">\r\n            <thead>\r\n                <tr>\r\n                    <th>id</th>\r\n                    <th>Title</th>\r\n                    <th>Description</th>\r\n                    <th>Date added</th>\r\n                    <th>Date deadline</th>\r\n                    <th>Importance</th>\r\n                    <th>Status</th>\r\n                    <th>Date closure</th>\r\n                    <th>No of comments</th>\r\n                    <div *ngIf=\"userLogged\">\r\n                        <th>Operations</th>\r\n                    </div>\r\n                </tr>\r\n            </thead>\r\n            <tbody>\r\n                <tr *ngFor=\"let task of tasks.items\"\r\n                    [ngClass]=\"{ 'selected': task === selectedTask }\"\r\n                    (click)=\"onSelect(task)\">\r\n                    <td>{{ task.id }}</td>\r\n                    <td>{{ task.title }}</td>\r\n                    <td>{{ task.description }}</td>\r\n                    <td>{{ task.dateAdded | date:'yyyy-MM-dd HH:mm:ss' }}</td>\r\n                    <td>{{ task.dateDeadline | date:'yyyy-MM-dd HH:mm:ss' }}</td>\r\n                    <td>{{ task.importance }}</td>\r\n                    <td>{{ task.status }}</td>\r\n                    <td>{{ task.dateClosure | date:'yyyy-MM-dd HH:mm:ss' }}</td>\r\n                    <td>{{ task.numberOfComments }}</td>\r\n                    <div *ngIf=\"userLogged\">\r\n                        <td>\r\n                            <button (click)=\"gotoDetail(task)\"><i class=\"fas fa-info\">Details</i></button>\r\n                            <button (click)=\"deleteTask(task);$event.stopPropagation()\"><i class=\"fa fa-trash\" aria-hidden=\"true\">Delete</i></button>\r\n                            <button (click)=\"updateTask(task);$event.stopPropagation()\"><i class=\"fas fa-pen\" aria-hidden=\"true\">Update</i></button>\r\n                        </td>\r\n                    </div>\r\n                </tr>\r\n            </tbody>\r\n        </table>\r\n    </div>\r\n");
 
 /***/ }),
 
@@ -113,7 +322,7 @@ __webpack_require__.r(__webpack_exports__);
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony default export */ __webpack_exports__["default"] = ("<h1 mat-dialog-title>Add comment</h1>\r\n<div mat-dialog-content>\r\n    <mat-form-field appearance=\"fill\">\r\n        <mat-label>Text</mat-label>\r\n        <input matInput placeholder=\"Add text\" #text>\r\n        <mat-error *ngIf=\"errorMessagesComment.Text\" class=\"text-danger\"><small>{{errorMessagesComment.Text}}</small></mat-error>\r\n    </mat-form-field>\r\n    <br>\r\n    <mat-form-field>\r\n        <mat-label>Important</mat-label>\r\n        <mat-select #important>\r\n            <mat-option value=\"true\">Yes</mat-option>\r\n            <mat-option value=\"false\">No</mat-option>\r\n        </mat-select>\r\n    </mat-form-field>\r\n</div>\r\n\r\n<div mat-dialog-actions>\r\n    <button mat-button (click)=\"onNoClick()\">No Thanks</button>\r\n    <button mat-button (click)=\"saveComment(text.value, important.value)\">Save</button>\r\n</div>\r\n");
+/* harmony default export */ __webpack_exports__["default"] = ("<h1 mat-dialog-title>Add comment</h1>\r\n<div mat-dialog-content>\r\n    <mat-form-field appearance=\"fill\">\r\n        <mat-label>Text</mat-label>\r\n        <input matInput placeholder=\"Add text\" #text required>\r\n        <mat-error *ngIf=\"errorMessagesComment.Text\" class=\"text-danger\">\r\n            <small>{{errorMessagesComment.Text}}</small>\r\n        </mat-error>\r\n    </mat-form-field>\r\n    <br>\r\n    <mat-form-field>\r\n        <mat-label>Important</mat-label>\r\n        <mat-select #important>\r\n            <mat-option value=\"true\">Yes</mat-option>\r\n            <mat-option value=\"false\">No</mat-option>\r\n        </mat-select>\r\n    </mat-form-field>\r\n</div>\r\n\r\n<div mat-dialog-actions>\r\n    <button mat-button (click)=\"onNoClick()\">No Thanks</button>\r\n    <button mat-button (click)=\"saveComment(text.value, important.value)\">Save</button>\r\n</div>\r\n");
 
 /***/ }),
 
@@ -126,7 +335,7 @@ __webpack_require__.r(__webpack_exports__);
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony default export */ __webpack_exports__["default"] = ("<p *ngIf=\"!task\"><em>Loading error..</em></p>\r\n\r\n<form class=\"form-horizontal\" role=\"form\" [formGroup]=\"updateForm\" *ngIf=\"this.updateForm\" (ngSubmit)=\"onFormSubmit()\">\r\n    <fieldset>\r\n        <legend>\r\n            Update:\r\n            <strong>Entry no. {{ task.id }} </strong>\r\n        </legend>\r\n\r\n        <div class=\"form-group\">\r\n            <div class=\"input-group-prepend\">\r\n                <label class=\"input-group-text\" for=\"inputGroupSelect01\">Title</label>\r\n                <input type=\"text\"\r\n                       required name=\"title\" placeholder=\"Enter title\" class=\"form-control\" formControlName=\"title\">\r\n                <span *ngIf=\"errorMessages.title\" class=\"text-danger\"><small>{{errorMessages.Title }}</small></span>\r\n            </div>\r\n\r\n        </div>\r\n\r\n        <div class=\"form-group\">\r\n            <div class=\"input-group-prepend\">\r\n                <label class=\"input-group-text\" for=\"inputGroupSelect01\">Description</label>\r\n                <input type=\"text\"\r\n                       required name=\"description\" placeholder=\"Enter description\" class=\"form-control\" formControlName=\"description\">\r\n                <span *ngIf=\"errorMessages.Description\" class=\"text-danger\"><small>{{errorMessages.Description}}</small></span>\r\n            </div>\r\n        </div>\r\n\r\n        <div class=\"form-group\">\r\n            <div class=\"input-group-prepend\">\r\n                <label class=\"input-group-text\" for=\"inputGroupSelect01\">Date Deadline</label>\r\n                <input type=\"datetime-local\"\r\n                       name=\"dateDeadline\" class=\"form-control\" formControlName=\"dateDeadline\">\r\n                <span *ngIf=\"errorMessages.DateDeadline\" class=\"text-danger\"><small>{{errorMessages.DateDeadline }}</small></span>\r\n            </div>\r\n        </div>\r\n\r\n        <div class=\"input-group mt-3\">\r\n            <div class=\"input-group-prepend\">\r\n                <label class=\"input-group-text\" for=\"inputGroupSelect01\">Importance</label>\r\n            </div>\r\n            <select class=\"custom-select\" name=\"importance\" formControlName=\"importance\">\r\n                <option *ngFor=\"let importance of importanceList\" [ngValue]=\"importance.value\">{{importance.name}}</option>\r\n            </select>\r\n        </div>\r\n\r\n        <div class=\"input-group mt-3\">\r\n            <div class=\"input-group-prepend\">\r\n                <label class=\"input-group-text\" for=\"inputGroupSelect01\">Status</label>\r\n            </div>\r\n            <select class=\"form-control\" name=\"status\" formControlName=\"status\">\r\n                <option *ngFor=\"let status of statusList\" [ngValue]=\"status.value\">\r\n                    {{status.name}}\r\n                </option>\r\n            </select>\r\n        </div>\r\n\r\n        <div class=\"form-group\">\r\n            <div class=\"col-sm-offset-2 col-sm-10\">\r\n                <div class=\"pull-right\">\r\n                    <button type=\"submit\" class=\"btn btn-primary\" style=\"margin: 4px;\">UPDATE</button>\r\n                    <button class=\"btn btn-secondary\" (click)=\"goBack()\" style=\"margin: 4px;\">BACK</button>\r\n                </div>\r\n            </div>\r\n        </div>\r\n    </fieldset>\r\n</form>\r\n\r\n<button mat-raised-button (click)=\"openDialog(task.id)\">Add comment</button>\r\n");
+/* harmony default export */ __webpack_exports__["default"] = ("<p *ngIf=\"!task\"><em>Loading error..</em></p>\r\n\r\n<form class=\"form-horizontal\" role=\"form\" [formGroup]=\"updateForm\" *ngIf=\"this.updateForm\" (ngSubmit)=\"onFormSubmit()\">\r\n    <fieldset>\r\n        <legend>\r\n            Update:\r\n            <strong>Entry no. {{ task.id }} </strong>\r\n        </legend>\r\n\r\n        <div class=\"form-group\">\r\n            <div class=\"input-group-prepend\">\r\n                <label class=\"input-group-text\" for=\"inputGroupSelect01\">Title</label>\r\n                <input type=\"text\"\r\n                       required name=\"title\" placeholder=\"Enter title\" class=\"form-control\" formControlName=\"title\">\r\n                <span *ngIf=\"errorMessages.Title\" class=\"text-danger\"><small>{{errorMessages.Title }}</small></span>\r\n            </div>\r\n\r\n        </div>\r\n\r\n        <div class=\"form-group\">\r\n            <div class=\"input-group-prepend\">\r\n                <label class=\"input-group-text\" for=\"inputGroupSelect01\">Description</label>\r\n                <input type=\"text\"\r\n                       required name=\"description\" placeholder=\"Enter description\" class=\"form-control\" formControlName=\"description\">\r\n                <span *ngIf=\"errorMessages.Description\" class=\"text-danger\"><small>{{errorMessages.Description}}</small></span>\r\n            </div>\r\n        </div>\r\n\r\n        <div class=\"form-group\">\r\n            <div class=\"input-group-prepend\">\r\n                <label class=\"input-group-text\" for=\"inputGroupSelect01\">Date Deadline</label>\r\n                <input type=\"datetime-local\"\r\n                       name=\"dateDeadline\" class=\"form-control\" formControlName=\"dateDeadline\">\r\n                <span *ngIf=\"errorMessages.DateDeadline\" class=\"text-danger\"><small>{{errorMessages.DateDeadline }}</small></span>\r\n            </div>\r\n        </div>\r\n\r\n        <div class=\"input-group mt-3\">\r\n            <div class=\"input-group-prepend\">\r\n                <label class=\"input-group-text\" for=\"inputGroupSelect01\">Importance</label>\r\n            </div>\r\n            <select class=\"custom-select\" name=\"importance\" formControlName=\"importance\">\r\n                <option *ngFor=\"let importance of importanceList\" [ngValue]=\"importance.value\">{{importance.name}}</option>\r\n            </select>\r\n        </div>\r\n\r\n        <div class=\"input-group mt-3\">\r\n            <div class=\"input-group-prepend\">\r\n                <label class=\"input-group-text\" for=\"inputGroupSelect01\">Status</label>\r\n            </div>\r\n            <select class=\"form-control\" name=\"status\" formControlName=\"status\">\r\n                <option *ngFor=\"let status of statusList\" [ngValue]=\"status.value\">\r\n                    {{status.name}}\r\n                </option>\r\n            </select>\r\n        </div>\r\n\r\n        <div class=\"form-group\">\r\n            <div class=\"col-sm-offset-2 col-sm-10\">\r\n                <div class=\"pull-right\">\r\n                    <button type=\"submit\" class=\"btn btn-primary\" style=\"margin: 4px;\">UPDATE</button>\r\n                    <button class=\"btn btn-secondary\" (click)=\"goBack()\" style=\"margin: 4px;\">BACK</button>\r\n                </div>\r\n            </div>\r\n        </div>\r\n    </fieldset>\r\n</form>\r\n\r\n<button mat-raised-button (click)=\"openDialog(task.id)\">Add comment</button>\r\n");
 
 /***/ }),
 
@@ -229,9 +438,12 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _angular_material_grid_list__WEBPACK_IMPORTED_MODULE_26__ = __webpack_require__(/*! @angular/material/grid-list */ "./node_modules/@angular/material/__ivy_ngcc__/fesm2015/grid-list.js");
 /* harmony import */ var _angular_material_tooltip__WEBPACK_IMPORTED_MODULE_27__ = __webpack_require__(/*! @angular/material/tooltip */ "./node_modules/@angular/material/__ivy_ngcc__/fesm2015/tooltip.js");
 /* harmony import */ var _angular_material_icon__WEBPACK_IMPORTED_MODULE_28__ = __webpack_require__(/*! @angular/material/icon */ "./node_modules/@angular/material/__ivy_ngcc__/fesm2015/icon.js");
-/* harmony import */ var _angular_material_button__WEBPACK_IMPORTED_MODULE_29__ = __webpack_require__(/*! @angular/material/button */ "./node_modules/@angular/material/__ivy_ngcc__/fesm2015/button.js");
-/* harmony import */ var _angular_platform_browser_animations__WEBPACK_IMPORTED_MODULE_30__ = __webpack_require__(/*! @angular/platform-browser/animations */ "./node_modules/@angular/platform-browser/__ivy_ngcc__/fesm2015/animations.js");
-/* harmony import */ var _service_comment_service__WEBPACK_IMPORTED_MODULE_31__ = __webpack_require__(/*! ./service/comment.service */ "./src/app/service/comment.service.ts");
+/* harmony import */ var _angular_material_card__WEBPACK_IMPORTED_MODULE_29__ = __webpack_require__(/*! @angular/material/card */ "./node_modules/@angular/material/__ivy_ngcc__/fesm2015/card.js");
+/* harmony import */ var _angular_material_button__WEBPACK_IMPORTED_MODULE_30__ = __webpack_require__(/*! @angular/material/button */ "./node_modules/@angular/material/__ivy_ngcc__/fesm2015/button.js");
+/* harmony import */ var _angular_material_paginator__WEBPACK_IMPORTED_MODULE_31__ = __webpack_require__(/*! @angular/material/paginator */ "./node_modules/@angular/material/__ivy_ngcc__/fesm2015/paginator.js");
+/* harmony import */ var _angular_platform_browser_animations__WEBPACK_IMPORTED_MODULE_32__ = __webpack_require__(/*! @angular/platform-browser/animations */ "./node_modules/@angular/platform-browser/__ivy_ngcc__/fesm2015/animations.js");
+/* harmony import */ var _service_comment_service__WEBPACK_IMPORTED_MODULE_33__ = __webpack_require__(/*! ./service/comment.service */ "./src/app/service/comment.service.ts");
+/* harmony import */ var _ng_bootstrap_ng_bootstrap__WEBPACK_IMPORTED_MODULE_34__ = __webpack_require__(/*! @ng-bootstrap/ng-bootstrap */ "./node_modules/@ng-bootstrap/ng-bootstrap/__ivy_ngcc__/fesm2015/ng-bootstrap.js");
 var __decorate = (undefined && undefined.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -241,6 +453,9 @@ var __decorate = (undefined && undefined.__decorate) || function (decorators, ta
 var __importDefault = (undefined && undefined.__importDefault) || function (mod) {
   return (mod && mod.__esModule) ? mod : { "default": mod };
 };
+
+
+
 
 
 
@@ -303,13 +518,16 @@ AppModule = __decorate([
             _angular_material_sort__WEBPACK_IMPORTED_MODULE_21__["MatSortModule"],
             _angular_material_table__WEBPACK_IMPORTED_MODULE_22__["MatTableModule"],
             _angular_material_dialog__WEBPACK_IMPORTED_MODULE_23__["MatDialogModule"],
-            _angular_material_button__WEBPACK_IMPORTED_MODULE_29__["MatButtonModule"],
+            _angular_material_button__WEBPACK_IMPORTED_MODULE_30__["MatButtonModule"],
             _angular_material_select__WEBPACK_IMPORTED_MODULE_24__["MatSelectModule"],
             _angular_material_list__WEBPACK_IMPORTED_MODULE_25__["MatListModule"],
             _angular_material_grid_list__WEBPACK_IMPORTED_MODULE_26__["MatGridListModule"],
-            _angular_platform_browser_animations__WEBPACK_IMPORTED_MODULE_30__["BrowserAnimationsModule"],
+            _angular_platform_browser_animations__WEBPACK_IMPORTED_MODULE_32__["BrowserAnimationsModule"],
             _angular_material_tooltip__WEBPACK_IMPORTED_MODULE_27__["MatTooltipModule"],
             _angular_material_icon__WEBPACK_IMPORTED_MODULE_28__["MatIconModule"],
+            _angular_material_card__WEBPACK_IMPORTED_MODULE_29__["MatCardModule"],
+            _angular_material_paginator__WEBPACK_IMPORTED_MODULE_31__["MatPaginatorModule"],
+            _ng_bootstrap_ng_bootstrap__WEBPACK_IMPORTED_MODULE_34__["NgbModule"],
             _angular_router__WEBPACK_IMPORTED_MODULE_4__["RouterModule"].forRoot([
                 { path: '', component: _home_home_component__WEBPACK_IMPORTED_MODULE_10__["HomeComponent"], pathMatch: 'full' },
                 { path: 'task-list', component: _task_list_task_list_component__WEBPACK_IMPORTED_MODULE_11__["TaskListComponent"] },
@@ -325,9 +543,10 @@ AppModule = __decorate([
                 { path: 'login', component: _login_login_component__WEBPACK_IMPORTED_MODULE_6__["LoginComponent"] },
                 { path: 'registration', component: _registration_registration_component__WEBPACK_IMPORTED_MODULE_7__["RegistrationComponent"] }
             ]),
+            _ng_bootstrap_ng_bootstrap__WEBPACK_IMPORTED_MODULE_34__["NgbModule"],
         ],
-        exports: [_core_core_module__WEBPACK_IMPORTED_MODULE_5__["CoreModule"], _angular_material_dialog__WEBPACK_IMPORTED_MODULE_23__["MatDialogModule"], _angular_material_form_field__WEBPACK_IMPORTED_MODULE_19__["MatFormFieldModule"], _angular_material_button__WEBPACK_IMPORTED_MODULE_29__["MatButtonModule"], _angular_material_input__WEBPACK_IMPORTED_MODULE_20__["MatInputModule"], _angular_material_select__WEBPACK_IMPORTED_MODULE_24__["MatSelectModule"], _angular_material_table__WEBPACK_IMPORTED_MODULE_22__["MatTableModule"], _angular_material_sort__WEBPACK_IMPORTED_MODULE_21__["MatSortModule"], _angular_material_tooltip__WEBPACK_IMPORTED_MODULE_27__["MatTooltipModule"], _angular_material_icon__WEBPACK_IMPORTED_MODULE_28__["MatIconModule"]],
-        providers: [_service_task_service__WEBPACK_IMPORTED_MODULE_12__["TaskService"], _service_comment_service__WEBPACK_IMPORTED_MODULE_31__["CommentService"]],
+        exports: [_core_core_module__WEBPACK_IMPORTED_MODULE_5__["CoreModule"], _angular_material_dialog__WEBPACK_IMPORTED_MODULE_23__["MatDialogModule"], _angular_material_form_field__WEBPACK_IMPORTED_MODULE_19__["MatFormFieldModule"], _angular_material_button__WEBPACK_IMPORTED_MODULE_30__["MatButtonModule"], _angular_material_input__WEBPACK_IMPORTED_MODULE_20__["MatInputModule"], _angular_material_select__WEBPACK_IMPORTED_MODULE_24__["MatSelectModule"], _angular_material_table__WEBPACK_IMPORTED_MODULE_22__["MatTableModule"], _angular_material_sort__WEBPACK_IMPORTED_MODULE_21__["MatSortModule"], _angular_material_tooltip__WEBPACK_IMPORTED_MODULE_27__["MatTooltipModule"], _angular_material_icon__WEBPACK_IMPORTED_MODULE_28__["MatIconModule"], _angular_material_card__WEBPACK_IMPORTED_MODULE_29__["MatCardModule"], _angular_material_paginator__WEBPACK_IMPORTED_MODULE_31__["MatPaginatorModule"]],
+        providers: [_service_task_service__WEBPACK_IMPORTED_MODULE_12__["TaskService"], _service_comment_service__WEBPACK_IMPORTED_MODULE_33__["CommentService"]],
         bootstrap: [_app_component__WEBPACK_IMPORTED_MODULE_8__["AppComponent"]]
     })
 ], AppModule);
@@ -770,7 +989,10 @@ let LoginComponent = class LoginComponent {
     }
     loginUser() {
         this.securityService.login(this.loginModel).subscribe(token => {
-            this.router.navigate(['/fetch-data']);
+            this.router.navigate(['/task-list'])
+                .then(() => {
+                window.location.reload();
+            });
         });
     }
 };
@@ -784,7 +1006,8 @@ LoginComponent = __decorate([
         template: __importDefault(__webpack_require__(/*! raw-loader!./login.component.html */ "./node_modules/raw-loader/dist/cjs.js!./src/app/login/login.component.html")).default,
         styles: [__importDefault(__webpack_require__(/*! ./login.component.css */ "./src/app/login/login.component.css")).default]
     }),
-    __metadata("design:paramtypes", [_core_services_security_service__WEBPACK_IMPORTED_MODULE_2__["SecurityService"], _angular_router__WEBPACK_IMPORTED_MODULE_1__["Router"]])
+    __metadata("design:paramtypes", [_core_services_security_service__WEBPACK_IMPORTED_MODULE_2__["SecurityService"],
+        _angular_router__WEBPACK_IMPORTED_MODULE_1__["Router"]])
 ], LoginComponent);
 
 
@@ -800,7 +1023,7 @@ LoginComponent = __decorate([
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony default export */ __webpack_exports__["default"] = ("a.navbar-brand {\n  white-space: normal;\n  text-align: center;\n  word-break: break-all;\n}\n\nhtml {\n  font-size: 14px;\n}\n\n@media (min-width: 768px) {\n  html {\n    font-size: 16px;\n  }\n}\n\n.box-shadow {\n  box-shadow: 0 .25rem .75rem rgba(0, 0, 0, .05);\n}\n\n/*# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbInNyYy9hcHAvbmF2LW1lbnUvbmF2LW1lbnUuY29tcG9uZW50LmNzcyJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiQUFBQTtFQUNFLG1CQUFtQjtFQUNuQixrQkFBa0I7RUFDbEIscUJBQXFCO0FBQ3ZCOztBQUVBO0VBQ0UsZUFBZTtBQUNqQjs7QUFDQTtFQUNFO0lBQ0UsZUFBZTtFQUNqQjtBQUNGOztBQUVBO0VBQ0UsOENBQThDO0FBQ2hEIiwiZmlsZSI6InNyYy9hcHAvbmF2LW1lbnUvbmF2LW1lbnUuY29tcG9uZW50LmNzcyIsInNvdXJjZXNDb250ZW50IjpbImEubmF2YmFyLWJyYW5kIHtcbiAgd2hpdGUtc3BhY2U6IG5vcm1hbDtcbiAgdGV4dC1hbGlnbjogY2VudGVyO1xuICB3b3JkLWJyZWFrOiBicmVhay1hbGw7XG59XG5cbmh0bWwge1xuICBmb250LXNpemU6IDE0cHg7XG59XG5AbWVkaWEgKG1pbi13aWR0aDogNzY4cHgpIHtcbiAgaHRtbCB7XG4gICAgZm9udC1zaXplOiAxNnB4O1xuICB9XG59XG5cbi5ib3gtc2hhZG93IHtcbiAgYm94LXNoYWRvdzogMCAuMjVyZW0gLjc1cmVtIHJnYmEoMCwgMCwgMCwgLjA1KTtcbn1cbiJdfQ== */");
+/* harmony default export */ __webpack_exports__["default"] = ("a.navbar-brand {\n  white-space: normal;\n  text-align: center;\n  word-break: break-all;\n}\n\nhtml {\n  font-size: 14px;\n}\n\n@media (min-width: 768px) {\n  html {\n    font-size: 16px;\n  }\n}\n\n.box-shadow {\n  box-shadow: 0 .25rem .75rem rgba(0, 0, 0, .05);\n}\n\n.container {\n    font-weight: bold;\n}\n\n/*# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbInNyYy9hcHAvbmF2LW1lbnUvbmF2LW1lbnUuY29tcG9uZW50LmNzcyJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiQUFBQTtFQUNFLG1CQUFtQjtFQUNuQixrQkFBa0I7RUFDbEIscUJBQXFCO0FBQ3ZCOztBQUVBO0VBQ0UsZUFBZTtBQUNqQjs7QUFDQTtFQUNFO0lBQ0UsZUFBZTtFQUNqQjtBQUNGOztBQUVBO0VBQ0UsOENBQThDO0FBQ2hEOztBQUVBO0lBQ0ksaUJBQWlCO0FBQ3JCIiwiZmlsZSI6InNyYy9hcHAvbmF2LW1lbnUvbmF2LW1lbnUuY29tcG9uZW50LmNzcyIsInNvdXJjZXNDb250ZW50IjpbImEubmF2YmFyLWJyYW5kIHtcbiAgd2hpdGUtc3BhY2U6IG5vcm1hbDtcbiAgdGV4dC1hbGlnbjogY2VudGVyO1xuICB3b3JkLWJyZWFrOiBicmVhay1hbGw7XG59XG5cbmh0bWwge1xuICBmb250LXNpemU6IDE0cHg7XG59XG5AbWVkaWEgKG1pbi13aWR0aDogNzY4cHgpIHtcbiAgaHRtbCB7XG4gICAgZm9udC1zaXplOiAxNnB4O1xuICB9XG59XG5cbi5ib3gtc2hhZG93IHtcbiAgYm94LXNoYWRvdzogMCAuMjVyZW0gLjc1cmVtIHJnYmEoMCwgMCwgMCwgLjA1KTtcbn1cblxuLmNvbnRhaW5lciB7XG4gICAgZm9udC13ZWlnaHQ6IGJvbGQ7XG59XG4iXX0= */");
 
 /***/ }),
 
@@ -815,19 +1038,35 @@ __webpack_require__.r(__webpack_exports__);
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "NavMenuComponent", function() { return NavMenuComponent; });
 /* harmony import */ var _angular_core__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @angular/core */ "./node_modules/@angular/core/__ivy_ngcc__/fesm2015/core.js");
+/* harmony import */ var _core_services_security_service__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../core/services/security.service */ "./src/app/core/services/security.service.ts");
+/* harmony import */ var _core_services_application_service__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../core/services/application.service */ "./src/app/core/services/application.service.ts");
+/* harmony import */ var _angular_common__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! @angular/common */ "./node_modules/@angular/common/__ivy_ngcc__/fesm2015/common.js");
 var __decorate = (undefined && undefined.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
     else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
+var __metadata = (undefined && undefined.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
 var __importDefault = (undefined && undefined.__importDefault) || function (mod) {
   return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 
+
+
+
 let NavMenuComponent = class NavMenuComponent {
-    constructor() {
+    constructor(securityService, applicationService, location) {
+        this.securityService = securityService;
+        this.applicationService = applicationService;
+        this.location = location;
         this.isExpanded = false;
+    }
+    ngOnInit() {
+        this.isLoggedIn = this.applicationService.isLoggedIn();
+        console.log("logged in" + this.isLoggedIn);
     }
     collapse() {
         this.isExpanded = false;
@@ -835,13 +1074,25 @@ let NavMenuComponent = class NavMenuComponent {
     toggle() {
         this.isExpanded = !this.isExpanded;
     }
+    logoutUser() {
+        this.securityService.logout();
+        window.location.reload();
+    }
 };
+NavMenuComponent.ctorParameters = () => [
+    { type: _core_services_security_service__WEBPACK_IMPORTED_MODULE_1__["SecurityService"] },
+    { type: _core_services_application_service__WEBPACK_IMPORTED_MODULE_2__["ApplicationService"] },
+    { type: _angular_common__WEBPACK_IMPORTED_MODULE_3__["Location"] }
+];
 NavMenuComponent = __decorate([
     Object(_angular_core__WEBPACK_IMPORTED_MODULE_0__["Component"])({
         selector: 'app-nav-menu',
         template: __importDefault(__webpack_require__(/*! raw-loader!./nav-menu.component.html */ "./node_modules/raw-loader/dist/cjs.js!./src/app/nav-menu/nav-menu.component.html")).default,
         styles: [__importDefault(__webpack_require__(/*! ./nav-menu.component.css */ "./src/app/nav-menu/nav-menu.component.css")).default]
-    })
+    }),
+    __metadata("design:paramtypes", [_core_services_security_service__WEBPACK_IMPORTED_MODULE_1__["SecurityService"],
+        _core_services_application_service__WEBPACK_IMPORTED_MODULE_2__["ApplicationService"],
+        _angular_common__WEBPACK_IMPORTED_MODULE_3__["Location"]])
 ], NavMenuComponent);
 
 
@@ -1029,9 +1280,14 @@ let TaskService = class TaskService {
         this.httpClient = httpClient;
         this.baseUrl = baseUrl;
     }
-    getTasks() {
+    getTasks(event) {
+        //let pageIndex = event ? event.pageIndex + "" : "0";
+        //let itemsPerPage = event ? event.pageSize + "" : "3";
+        let pageIndex = event ? event + "" : "0";
+        let itemsPerPage = "3";
+        let params = new _angular_common_http__WEBPACK_IMPORTED_MODULE_1__["HttpParams"]().set("page", pageIndex).set("itemsPerPage", itemsPerPage); //Create new HttpParams
         return this.httpClient
-            .get(this.baseUrl + 'api/taskitems');
+            .get(`${this.baseUrl}api/taskitems`, { params: params });
     }
     getTask(id) {
         return this.httpClient
@@ -1137,7 +1393,7 @@ class TaskDetailComponent {
     }
     deleteComment(id) {
         this.commentService.deleteComment(id).subscribe(x => {
-            this.goBack();
+            window.location.reload();
         });
     }
 };
@@ -1185,7 +1441,6 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _angular_core__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @angular/core */ "./node_modules/@angular/core/__ivy_ngcc__/fesm2015/core.js");
 /* harmony import */ var _service_task_service__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../service/task.service */ "./src/app/service/task.service.ts");
 /* harmony import */ var _angular_router__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! @angular/router */ "./node_modules/@angular/router/__ivy_ngcc__/fesm2015/router.js");
-/* harmony import */ var rxjs__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! rxjs */ "./node_modules/rxjs/_esm2015/index.js");
 var __decorate = (undefined && undefined.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -1201,22 +1456,38 @@ var __importDefault = (undefined && undefined.__importDefault) || function (mod)
 
 
 
-
 let TaskListComponent = class TaskListComponent {
     constructor(service, router) {
         this.service = service;
         this.router = router;
         this.userLogged = false;
-        this.isClicked = new rxjs__WEBPACK_IMPORTED_MODULE_3__["BehaviorSubject"](false);
+        //this.isClicked = new BehaviorSubject<boolean>(false);
     }
     ngOnInit() {
-        this.getTasks();
+        this.getTasks(null);
         this.userLogged = !!localStorage.getItem('token');
-        console.log(this.userLogged);
     }
-    getTasks() {
-        this.service.getTasks()
-            .subscribe(tasks => this.tasks = tasks, error => this.errorMessage = error);
+    getTasks(event) {
+        console.log(event);
+        this.service.getTasks(event)
+            .subscribe(tasks => this.tasks = tasks);
+    }
+    filterDate(fromDate, fromTime, toDate, toTime) {
+        var fromDateTime, toDateTime;
+        if (fromDate) {
+            fromDateTime = fromDate;
+            if (fromTime) {
+                fromDateTime = `${fromDateTime}T${fromTime}`;
+            }
+        }
+        if (toDate) {
+            toDateTime = toDate;
+            if (toTime) {
+                toDateTime = `${toDateTime}T${toTime}`;
+            }
+        }
+        this.service.filter(fromDateTime, toDateTime)
+            .subscribe(tasks => this.tasks = tasks);
     }
     onSelect(task) {
         this.selectedTask = task;
@@ -1241,23 +1512,6 @@ let TaskListComponent = class TaskListComponent {
                 console.log("Task deleted"),
                 error => this.errorMessage = error;
         });
-    }
-    filterDate(fromDate, fromTime, toDate, toTime) {
-        var fromDateTime, toDateTime;
-        if (fromDate) {
-            fromDateTime = fromDate;
-            if (fromTime) {
-                fromDateTime = `${fromDateTime}T${fromTime}`;
-            }
-        }
-        if (toDate) {
-            toDateTime = toDate;
-            if (toTime) {
-                toDateTime = `${toDateTime}T${toTime}`;
-            }
-        }
-        this.service.filter(fromDateTime, toDateTime)
-            .subscribe(tasks => this.tasks = tasks);
     }
 };
 TaskListComponent.ctorParameters = () => [
@@ -1326,11 +1580,14 @@ let TaskNewComponent = class TaskNewComponent {
         }
         this.service.save({
             id, title, description, dateAdded, dateDeadline, importance, status, dateClosure, comments
-        }).subscribe((err) => {
+        }).subscribe(() => {
+            console.log("completed");
+            this.goBack();
+        }, (err) => {
             console.log("Err in saving client: ", err);
             console.log(err);
-            //this.errorMessages.push(err);
-        }, () => console.log("completed"));
+            this.errorMessages = err;
+        });
     }
     goBack() {
         this.location.back();
@@ -1577,13 +1834,19 @@ const environment = {
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getBaseUrl", function() { return getBaseUrl; });
-/* harmony import */ var _angular_core__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @angular/core */ "./node_modules/@angular/core/__ivy_ngcc__/fesm2015/core.js");
-/* harmony import */ var _angular_platform_browser_dynamic__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @angular/platform-browser-dynamic */ "./node_modules/@angular/platform-browser-dynamic/__ivy_ngcc__/fesm2015/platform-browser-dynamic.js");
-/* harmony import */ var _app_app_module__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./app/app.module */ "./src/app/app.module.ts");
-/* harmony import */ var _environments_environment__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./environments/environment */ "./src/environments/environment.ts");
+/* harmony import */ var _angular_localize_init__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @angular/localize/init */ "./node_modules/@angular/localize/fesm2015/init.js");
+/* harmony import */ var _angular_localize_init__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_angular_localize_init__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _angular_core__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @angular/core */ "./node_modules/@angular/core/__ivy_ngcc__/fesm2015/core.js");
+/* harmony import */ var _angular_platform_browser_dynamic__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! @angular/platform-browser-dynamic */ "./node_modules/@angular/platform-browser-dynamic/__ivy_ngcc__/fesm2015/platform-browser-dynamic.js");
+/* harmony import */ var _app_app_module__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./app/app.module */ "./src/app/app.module.ts");
+/* harmony import */ var _environments_environment__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./environments/environment */ "./src/environments/environment.ts");
 var __importDefault = (undefined && undefined.__importDefault) || function (mod) {
   return (mod && mod.__esModule) ? mod : { "default": mod };
 };
+/***************************************************************************************************
+ * Load `$localize` onto the global scope - used if i18n tags appear in Angular templates.
+ */
+
 
 
 
@@ -1594,10 +1857,10 @@ function getBaseUrl() {
 const providers = [
     { provide: 'BASE_URL', useFactory: getBaseUrl, deps: [] }
 ];
-if (_environments_environment__WEBPACK_IMPORTED_MODULE_3__["environment"].production) {
-    Object(_angular_core__WEBPACK_IMPORTED_MODULE_0__["enableProdMode"])();
+if (_environments_environment__WEBPACK_IMPORTED_MODULE_4__["environment"].production) {
+    Object(_angular_core__WEBPACK_IMPORTED_MODULE_1__["enableProdMode"])();
 }
-Object(_angular_platform_browser_dynamic__WEBPACK_IMPORTED_MODULE_1__["platformBrowserDynamic"])(providers).bootstrapModule(_app_app_module__WEBPACK_IMPORTED_MODULE_2__["AppModule"])
+Object(_angular_platform_browser_dynamic__WEBPACK_IMPORTED_MODULE_2__["platformBrowserDynamic"])(providers).bootstrapModule(_app_app_module__WEBPACK_IMPORTED_MODULE_3__["AppModule"])
     .catch(err => console.log(err));
 
 
